@@ -1,0 +1,12 @@
+{
+  "version": "2.20.1",
+  "componentes": [
+    "details",
+    "dialog",
+    "drawer",
+    "tab",
+    "tab-group",
+    "tab-panel",
+    "tooltip"
+  ]
+}

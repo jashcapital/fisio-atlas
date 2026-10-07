@@ -1,0 +1,2862 @@
+/* ============================================================================
+   FISIO ATLAS — hoja única de estilo
+   ----------------------------------------------------------------------------
+   Sustituye a main.css + editorial.css + interactions.css + glass-layout.css.
+   El orden de @layer fija la cascada de una vez: nada necesita !important.
+   Se apoya en Open Props (tokens) y Shoelace (componentes).
+
+   PRINCIPIO RECTOR — sobre fondo oscuro la profundidad se construye con LUZ
+   (bordes claros, highlight interior, glow), no con sombra: una sombra negra
+   sobre negro es invisible. Todas las superficies elevadas llevan por tanto
+   un borde iluminado + highlight interno, y la sombra solo asienta la pieza.
+   ========================================================================== */
+
+@layer reset, tokens, layout, components, shoelace, responsive, motion;
+
+/* ═══════════════════════════════════════════════════════════════════ TOKENS */
+@layer tokens {
+  :root {
+    color-scheme: dark;
+
+    /* Open Props: calibra sus sombras para superficie oscura */
+    --shadow-color: 28 40% 2%;
+    --shadow-strength: 28%;
+
+    /* ---- Paleta cálida "Atlas" ---------------------------------------- */
+    --bg-0: #100c09;
+    --bg-1: #16110d;
+    --bg-2: #1e1712;
+    --bg-3: #281f17;
+
+    --text-0: #f2ebdd;
+    --text-1: #c9bda6;
+    --text-2: #b0a48d;
+    --text-3: #9e9280;
+
+    --accent: #e08b76;
+    --accent-soft: #f0b3a3;
+    --accent-deep: #9a3b30;
+    --accent-dim: rgb(224 139 118 / 14%);
+    --accent-line: rgb(224 139 118 / 42%);
+
+    --muscle: #d76a55;
+    --bone: #d9c9a0;
+    --nerve: #e0b14e;
+    --tendon: #b9a7cf;
+    --ligament: #9aaed0; /* azul acero perlado: mismo hex que el material 3D en loader.js; el #d8e2ec no se distinguía del hueso */
+    --origin: #6fa6ff;
+    --insertion: #ff8c42; /* coral: mismo tono que INSERTION_COLOR en focus.js; el rojo se confundía con el músculo seleccionado */
+    --gold: #c2a05c;
+    --danger: #e0776c;
+
+    /* ---- Superficies de vidrio ----------------------------------------
+       Casi opacas a propósito: el visor 3D ocupa toda la ventana por detrás,
+       así que con opacidad baja el contraste del texto dependía de lo que
+       pintara el modelo — sobre hueso iluminado --text-3 caía a 1,33:1. */
+    --glass: linear-gradient(180deg, rgb(42 33 24 / 94%), rgb(24 18 13 / 92%));
+    --glass-solid: #1c1610;
+    --blur: blur(22px) saturate(115%);
+
+    /* ---- Trazos: la profundidad vive aquí ------------------------------ */
+    --stroke-1: rgb(255 238 214 / 11%);
+    --stroke-2: rgb(255 238 214 / 18%);
+    --stroke-3: rgb(255 238 214 / 28%);
+
+    /* highlight superior + sombra de asiento */
+    --lift-1: inset 0 1px 0 rgb(255 244 226 / 8%), 0 6px 18px -10px rgb(0 0 0 / 70%);
+    --lift-2: inset 0 1px 0 rgb(255 244 226 / 9%), 0 18px 44px -18px rgb(0 0 0 / 78%);
+    --lift-3: inset 0 1px 0 rgb(255 244 226 / 11%), 0 28px 70px -24px rgb(0 0 0 / 82%);
+    --glow-accent: 0 0 0 1px var(--accent-line), 0 0 22px -4px rgb(224 139 118 / 38%);
+
+    /* ---- Tipografía ---------------------------------------------------- */
+    --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    /* ---- Forma --------------------------------------------------------- */
+    --r-xs: 6px;
+    --r-sm: 9px;
+    --r-md: 13px;
+    --r-lg: 18px;
+    --r-xl: 22px;
+    --r-pill: 999px;
+
+    /* ---- Métricas de layout (las reescriben los breakpoints) ----------- */
+    --pad-edge: 16px;
+    --rail-w: 264px;
+    --ficha-w: 404px;
+    --header-h: 62px;
+    /* Márgenes de cada borde contando las zonas seguras: muesca y esquinas en
+       un iPhone apaisado, barra de estado e indicador de inicio en la app
+       instalada. El viewport lleva `viewport-fit=cover`, así que el visor 3D
+       llega hasta el borde físico y TODO lo demás tiene que apartarse de esas
+       zonas. En un escritorio env() vale 0 y quedan igual que --pad-edge. */
+    --edge-t: calc(var(--pad-edge) + env(safe-area-inset-top, 0px));
+    --edge-r: calc(var(--pad-edge) + env(safe-area-inset-right, 0px));
+    --edge-b: calc(var(--pad-edge) + env(safe-area-inset-bottom, 0px));
+    --edge-l: calc(var(--pad-edge) + env(safe-area-inset-left, 0px));
+    --stage-top: calc(var(--header-h) + var(--edge-t));
+    /* Bordes del hueco libre entre la barra lateral y la ficha. Todo lo que
+       flota sobre el visor (barra de vistas, etiqueta del cursor, comparador)
+       se mide contra esto y no contra el centro de la ventana: el centro no
+       sabe cuánto ocupan los paneles. En compacto el hueco es la pantalla. */
+    --gap-izq: calc(var(--edge-l) + var(--rail-w) + 14px);
+    --gap-der: calc(var(--edge-r) + var(--ficha-w) + 14px);
+
+    /* ---- Movimiento (Open Props) --------------------------------------- */
+    --ease: var(--ease-out-3, cubic-bezier(0.22, 0.61, 0.36, 1));
+    --ease-spring: var(--ease-spring-3, cubic-bezier(0.34, 1.56, 0.64, 1));
+    --t-1: 140ms;
+    --t-2: 260ms;
+  }
+
+  /* Breakpoints: solo re-declaran métricas, nunca reglas estructurales */
+  @media (width <= 1400px) {
+    :root { --rail-w: 244px; --ficha-w: 376px; }
+  }
+  @media (width <= 1180px) {
+    :root { --rail-w: 224px; --ficha-w: 340px; --pad-edge: 12px; }
+  }
+  @media (width <= 1023px) {
+    :root {
+      --header-h: 56px;
+      --pad-edge: 12px;
+      --gap-izq: var(--edge-l);
+      --gap-der: var(--edge-r);
+    }
+  }
+  @media (width <= 640px) {
+    :root { --header-h: 52px; --pad-edge: 10px; }
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════ RESET */
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: var(--bg-0);
+    color: var(--text-0);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background:
+      radial-gradient(130% 100% at 32% 16%, #2a2016 0%, #191310 46%, #0e0a07 100%);
+  }
+
+  h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+  p { margin: 0; }
+
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  [hidden] { display: none !important; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--bg-3);
+    padding: 1px 6px;
+    border-radius: var(--r-xs);
+    color: var(--text-0);
+  }
+
+  /* Sin border-radius: aplicaría al ELEMENTO, no al contorno, y convertía las
+     píldoras (.chip, .bone-chip, .sr-tag, .ficha__code) en rectángulos al
+     tabular. Los navegadores actuales ya hacen que el outline siga la forma. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(255 238 214 / 12%);
+    border-radius: var(--r-pill);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(255 238 214 / 22%); background-clip: content-box; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════ LAYOUT */
+@layer layout {
+  /* ---- Escenario 3D: capa de fondo a pantalla completa ---------------- */
+  /* Sin z-index a propósito: un valor numérico aquí crearía contexto de
+     apilamiento y encerraría a TODOS los overlays hijos (loader, tooltip,
+     controles, aviso) en el nivel 0, por debajo de los paneles laterales y
+     de la cabecera, por muy alto que fuera su propio z-index. Con `auto`,
+     el visor sigue pintándose al fondo y sus overlays suben de verdad. */
+  .viewer {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  #viewer-canvas { display: block; width: 100%; height: 100%; }
+
+  /* ---- Cabecera flotante --------------------------------------------- */
+  .app-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: var(--edge-t) var(--edge-r) 0 var(--edge-l);
+    pointer-events: none;
+  }
+  .app-header > * { pointer-events: auto; }
+
+  /* ---- Paneles laterales flotantes ------------------------------------ */
+  .sidebar,
+  .info-panel {
+    position: fixed;
+    top: var(--stage-top);
+    bottom: var(--edge-b);
+    z-index: 12;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+  }
+  .sidebar { left: var(--edge-l); width: var(--rail-w); }
+  .info-panel { right: var(--edge-r); width: var(--ficha-w); }
+
+  /* ---- Overlays del visor: anclados a las métricas, no a píxeles duros - */
+  /* Centrada en el hueco libre y nunca más ancha que él. Con `left: 50%` y
+     `translate` la barra (524 px) no cabía en los 436 px del hueco a 1024 px
+     y montaba 44 px sobre CADA panel. Con left/right fijos, `fit-content` y
+     márgenes automáticos se centra igual y el tope lo pone el hueco. Sin
+     `translate`, además, deja de ser bloque contenedor por dos vías. */
+  .viewer__bar {
+    position: fixed;
+    top: var(--stage-top);
+    left: var(--gap-izq);
+    right: var(--gap-der);
+    width: fit-content;
+    max-width: calc(100vw - var(--gap-izq) - var(--gap-der));
+    margin-inline: auto;
+    z-index: 15;
+  }
+
+  .viewer__hint {
+    position: fixed;
+    left: calc(var(--edge-l) + var(--rail-w) + 14px);
+    top: calc(var(--stage-top) + 62px);
+    z-index: 14;
+    width: min(272px, 34vw);
+  }
+
+  .attach-legend {
+    position: fixed;
+    left: calc(var(--edge-l) + var(--rail-w) + 14px);
+    bottom: var(--edge-b);
+    z-index: 14;
+  }
+
+  /* Etiqueta del cursor: en el hueco libre, a la derecha de la leyenda de
+     inserciones (142 px de ancho). Con `left: 50%` y `translate` su ancho
+     máximo era media ventana: a 390 px el nombre partía en tres renglones
+     dentro de una píldora, y a 1024 px montaba 82 px sobre la ficha y sobre
+     la propia leyenda. */
+  .viewer__hud {
+    position: fixed;
+    left: calc(var(--gap-izq) + 152px);
+    right: var(--gap-der);
+    bottom: var(--edge-b);
+    display: flex;
+    justify-content: center;
+    z-index: 14;
+    pointer-events: none;
+  }
+
+  .viewer__notice {
+    position: fixed;
+    left: calc(50% + (var(--rail-w) - var(--ficha-w)) / 2);
+    bottom: calc(var(--edge-b) + 52px);
+    translate: -50% 0;
+    z-index: 16;
+    max-width: min(460px, 90vw);
+  }
+
+  .viewer__loader { position: fixed; inset: 0; z-index: 30; }
+
+
+  /* Los disparadores de panel solo existen en compacto */
+  .header__toggle { display: none; }
+
+}
+
+/* ═══════════════════════════════════════════════════════════════ COMPONENTS */
+@layer components {
+
+  /* ---- Superficie de vidrio compartida -------------------------------- */
+  .pane,
+  .sidebar,
+  .info-panel,
+  .viewer__bar,
+  .viewer__hint,
+  .attach-legend,
+  .search input,
+  .breadcrumb,
+  .brand,
+  .search__results {
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--stroke-1);
+  }
+
+  .sidebar,
+  .info-panel { border-radius: var(--r-xl); box-shadow: var(--lift-3); }
+
+  .viewer__bar,
+  .viewer__hint,
+  .attach-legend,
+  .search__results { border-radius: var(--r-md); box-shadow: var(--lift-2); }
+
+  /* ---- Marca ---------------------------------------------------------- */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 7px 15px 7px 8px;
+    border-radius: var(--r-md);
+    box-shadow: var(--lift-1);
+  }
+
+  .brand__mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border-radius: var(--r-sm);
+    background: linear-gradient(150deg, var(--accent-deep), #6d2620);
+    box-shadow: inset 0 1px 0 rgb(255 200 180 / 28%), 0 2px 8px -2px rgb(0 0 0 / 60%);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: #f6e7dc;
+  }
+
+  .brand__text { display: grid; gap: 1px; min-width: 0; }
+
+  .brand h1 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .brand p {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---- Buscador ------------------------------------------------------- */
+  .search { position: relative; justify-self: center; width: 100%; max-width: 540px; }
+
+  .search input {
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: var(--r-md);
+    box-shadow: var(--lift-1);
+    color: var(--text-0);
+    font: inherit;
+    transition: border-color var(--t-2) var(--ease), box-shadow var(--t-2) var(--ease);
+  }
+  .search input { border-color: rgb(255 238 214 / 36%); }
+  .search input::placeholder { color: var(--text-2); }
+  .search input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--lift-1), var(--glow-accent);
+  }
+
+  .search__results {
+    /* Siempre flota sobre el render 3D: opaco, sin depender del backdrop */
+    background: var(--glass-solid);
+    backdrop-filter: none;
+    position: absolute;
+    inset: calc(100% + 8px) 0 auto 0;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: min(50vh, 360px);
+    max-height: min(50dvh, 360px);
+    overflow-y: auto;
+    z-index: 40;
+  }
+  .search__results li {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 9px 12px;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+  }
+  .search__results li:hover,
+  .search__results li[aria-selected="true"] { background: var(--accent-dim); }
+
+  /* Aviso de «sin resultados»: misma superficie y sitio que el desplegable */
+  .search__vacio {
+    position: absolute;
+    inset: calc(100% + 8px) 0 auto 0;
+    z-index: 40;
+    margin: 0;
+    padding: 12px 16px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-md);
+    background: var(--glass-solid);
+    box-shadow: var(--lift-2);
+    font-size: 13px;
+    color: var(--text-1);
+  }
+  .search__vacio span {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  .search__results em {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  /* ---- Migas ---------------------------------------------------------- */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 40vw;
+    padding: 10px 15px;
+    border-radius: var(--r-md);
+    box-shadow: var(--lift-1);
+    font-size: 12px;
+    color: var(--text-1);
+  }
+  .breadcrumb span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Solo encoge el nombre. Con las tres migas encogiendo a la vez, a 1024 px
+     salía «Cabeza y cu… › Cab… › Depresor del ángulo de la boca (triang…»:
+     tres cortes en una línea. La región es corta y fija; el nombre ya se lee
+     entero en la ficha. */
+  .breadcrumb span:not(:last-child) { flex: none; }
+  .breadcrumb span:last-child { min-width: 0; }
+  .breadcrumb span + span::before {
+    content: "›";
+    margin-right: 6px;
+    color: var(--text-3);
+  }
+  .breadcrumb span:last-child { color: var(--text-0); font-weight: 500; }
+
+  /* ---- Disparadores de panel (compacto) ------------------------------- */
+  .header__toggle {
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--r-md);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--stroke-1);
+    box-shadow: var(--lift-1);
+    color: var(--text-1);
+    transition: color var(--t-1) var(--ease), border-color var(--t-1) var(--ease);
+  }
+  .header__toggle:hover { color: var(--accent); border-color: var(--accent-line); }
+  .header__side { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .header__side:last-child { justify-content: flex-end; }
+
+  /* ---- Barra lateral -------------------------------------------------- */
+  .sidebar { padding: 18px 14px; gap: 4px; }
+
+  .sidebar__block { padding-bottom: 16px; }
+  .sidebar__block + .sidebar__block {
+    padding-top: 16px;
+    border-top: 1px solid var(--stroke-1);
+  }
+  .sidebar__block--bottom { margin-top: auto; padding-bottom: 4px; }
+
+  .sidebar h2 {
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .layer-list,
+  .region-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .layer-list button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 9px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--text-1);
+    text-align: left;
+    transition: background var(--t-1) var(--ease), color var(--t-1) var(--ease);
+  }
+  .layer-list button:hover { background: rgb(255 240 220 / 7%); color: var(--text-0); }
+  .layer-list button[aria-pressed="true"] { color: var(--text-0); }
+  .layer-list button[aria-pressed="false"] { color: var(--text-3); }
+
+  .layer-list .eye {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--accent);
+  }
+  .layer-list button[aria-pressed="false"] .eye { color: var(--text-3); }
+
+  /* ---- Leyenda -------------------------------------------------------- */
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+    color: var(--text-1);
+  }
+  .legend__dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 9px;
+    border-radius: 50%;
+    vertical-align: middle;
+    box-shadow: 0 0 8px -1px currentColor;
+  }
+  .legend__dot--muscle { background: var(--muscle); color: var(--muscle); }
+  .legend__dot--bone { background: var(--bone); color: var(--bone); }
+  .legend__dot--nerve { background: var(--nerve); color: var(--nerve); }
+  .legend__dot--tendon { background: var(--tendon); color: var(--tendon); }
+  .legend__dot--ligament { background: var(--ligament); color: var(--ligament); }
+}
+
+/* ═══════════════════════════════════════════════ REGIONES (acordeón) */
+@layer components {
+  .region-list sl-details::part(base) {
+    background: transparent;
+    border: none;
+    border-radius: var(--r-sm);
+  }
+  .region-list sl-details::part(header) {
+    padding: 8px 9px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--text-1);
+    transition: background var(--t-1) var(--ease), color var(--t-1) var(--ease);
+  }
+  .region-list sl-details::part(header):hover { background: rgb(255 240 220 / 7%); color: var(--text-0); }
+  .region-list sl-details::part(header):focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .region-list sl-details[open]::part(header) { color: var(--text-0); }
+  .region-list sl-details::part(summary-icon) { color: var(--text-3); font-size: 13px; }
+  .region-list sl-details::part(content) { padding: 2px 0 8px 9px; }
+
+  .region__summary { display: flex; align-items: center; gap: 8px; width: 100%; }
+  .region__count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-3);
+  }
+  sl-details[open] .region__count { color: var(--accent); }
+
+  .region__items {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 0;
+    padding: 0 0 0 8px;
+    list-style: none;
+    border-left: 1px solid var(--stroke-1);
+  }
+  .region__items button {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: var(--r-xs);
+    text-align: left;
+    color: var(--text-1);
+    transition: background var(--t-1) var(--ease), color var(--t-1) var(--ease);
+  }
+  .region__items button:hover { background: var(--accent-dim); color: var(--text-0); }
+  .region__items button[aria-current="true"] { background: var(--accent-dim); color: var(--accent-soft); }
+  .region__items .n { font-size: 12.5px; line-height: 1.3; }
+  .region__items em {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 10.5px;
+    color: var(--text-3);
+  }
+  .region__dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 7px;
+    border-radius: 50%;
+    vertical-align: middle;
+    flex: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════ VISOR */
+@layer components {
+  /* La fila desplaza en horizontal cuando no cabe (teléfono). Desplaza ella y
+     no el marco: ver el comentario en index.html sobre los tooltips. */
+  .viewer__controls {
+    display: flex;
+    gap: 4px;
+    padding: 5px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .viewer__controls::-webkit-scrollbar { display: none; }
+
+  /* Borde difuminado del lado que esconde botones (layout.js marca
+     `data-desborda`). Sin él, «Aislar» y «Ayuda» quedaban fuera a 390 px
+     sin nada que dijera que la fila seguía. */
+  .viewer__bar::before,
+  .viewer__bar::after {
+    content: "";
+    position: absolute;
+    inset-block: 1px;
+    width: 30px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--t-1) var(--ease);
+  }
+  .viewer__bar::before {
+    left: 1px;
+    border-radius: var(--r-md) 0 0 var(--r-md);
+    background: linear-gradient(to left, transparent, rgb(33 26 19 / 97%));
+  }
+  .viewer__bar::after {
+    right: 1px;
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    background: linear-gradient(to right, transparent, rgb(33 26 19 / 97%));
+  }
+  .viewer__bar[data-desborda~="izquierda"]::before,
+  .viewer__bar[data-desborda~="derecha"]::after { opacity: 1; }
+
+  .viewer__controls button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 32px;
+    padding: 0 11px;
+    border-radius: var(--r-sm);
+    color: var(--text-1);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    transition: background var(--t-1) var(--ease), color var(--t-1) var(--ease),
+      box-shadow var(--t-1) var(--ease);
+  }
+  .viewer__controls button:hover { background: rgb(255 240 220 / 9%); color: var(--text-0); }
+  .viewer__controls button.is-active {
+    color: var(--accent-soft);
+    background: var(--accent-dim);
+    box-shadow: inset 0 0 0 1px var(--accent-line), 0 0 18px -6px rgb(224 139 118 / 55%);
+  }
+  .viewer__divider { width: 1px; flex: none; margin: 3px 3px; background: var(--stroke-1); }
+
+  .viewer__hint { padding: 12px 14px; font-size: 10.5px; line-height: 1.45; color: var(--text-1); }
+  .viewer__hint strong {
+    display: block;
+    margin-bottom: 9px;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .viewer__hint ul {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* Una sola lista a la vez: la táctil solo sin puntero fino (ver responsive) */
+  .viewer__hint .viewer__hint-tactil { display: none; }
+  .viewer__hint kbd {
+    display: inline-block;
+    margin-right: 2px;
+    padding: 1.5px 5px;
+    border: 1px solid var(--stroke-2);
+    border-radius: 4px;
+    background: rgb(255 240 220 / 6%);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-0);
+  }
+  .viewer__hint-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--text-3);
+  }
+  .viewer__hint-close:hover { color: var(--text-0); background: rgb(255 240 220 / 9%); }
+
+  .viewer__hud-label {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 7px 14px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-pill);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--lift-2);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--accent-soft);
+    opacity: 0;
+    translate: 0 5px;
+    transition: opacity var(--t-1) var(--ease), translate var(--t-1) var(--ease);
+  }
+  .viewer__hud-label.visible { opacity: 1; translate: 0 0; }
+
+  .hover-tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 280px;
+    padding: 8px 12px;
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-sm);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--lift-2);
+    pointer-events: none;
+  }
+  /* Hijos de un flex-column: sin min-width:0 no pueden encoger por debajo de su
+     contenido, y un nombre latino de una sola palabra larga se salía de la
+     burbuja. overflow-wrap parte la palabra si aun así no cabe. */
+  .hover-tooltip__es,
+  .hover-tooltip__la {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .hover-tooltip__es { font-size: 13px; font-weight: 600; color: var(--text-0); }
+  .hover-tooltip__la {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .attach-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px 13px;
+    font-size: 12px;
+    color: var(--text-1);
+  }
+  .attach-legend__title {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .attach-legend__row { display: flex; align-items: center; gap: 8px; }
+  .attach-legend__dot {
+    width: 11px;
+    height: 11px;
+    flex: none;
+    border-radius: 50%;
+  }
+  .attach-legend__dot--origin { background: var(--origin); box-shadow: 0 0 10px -1px var(--origin); }
+  .attach-legend__dot--insertion { background: var(--insertion); box-shadow: 0 0 10px -1px var(--insertion); }
+
+  .viewer__loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgb(14 10 7 / 94%);
+    color: var(--text-1);
+  }
+  .viewer__loader p { font-size: 12px; letter-spacing: 0.03em; color: var(--text-2); }
+  .progress-bar {
+    width: 220px;
+    height: 3px;
+    border-radius: var(--r-pill);
+    background: var(--bg-3);
+    overflow: hidden;
+  }
+  .progress-bar__fill {
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-deep), var(--accent-soft));
+    transition: width 180ms var(--ease);
+  }
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--stroke-1);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: fa-spin 900ms linear infinite;
+  }
+  @keyframes fa-spin { to { rotate: 360deg; } }
+
+  .viewer__notice {
+    padding: 13px 16px;
+    border: 1px solid rgb(224 119 108 / 38%);
+    border-radius: var(--r-md);
+    background: rgb(60 20 16 / 82%);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--lift-2);
+    font-size: 12px;
+    color: var(--text-0);
+  }
+  .viewer__notice h2 { margin-bottom: 4px; font-size: 13px; color: var(--danger); }
+  .viewer__notice p { color: var(--text-1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════ FICHA */
+@layer components {
+  .info-panel__empty {
+    margin: auto;
+    max-width: 280px;
+    padding: 40px 28px;
+    text-align: center;
+    color: var(--text-3);
+  }
+  .info-panel__empty svg { margin-bottom: 12px; opacity: 0.45; }
+  .info-panel__empty h2 {
+    margin-bottom: 8px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .info-panel__empty p { font-size: 12.5px; line-height: 1.65; }
+
+  .ficha { display: flex; flex-direction: column; min-height: 0; }
+
+  .ficha__header { padding: 20px 22px 16px; border-bottom: 1px solid var(--stroke-1); }
+
+  .ficha__kicker {
+    display: inline-block;
+    margin-bottom: 11px;
+    padding: 3.5px 9px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-xs);
+    background: var(--accent-dim);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .ficha__kicker--muscle { color: var(--muscle); border-color: rgb(215 106 85 / 45%); background: rgb(215 106 85 / 12%); }
+  .ficha__kicker--bone { color: var(--bone); border-color: rgb(217 201 160 / 42%); background: rgb(217 201 160 / 10%); }
+  .ficha__kicker--nerve { color: var(--nerve); border-color: rgb(224 177 78 / 42%); background: rgb(224 177 78 / 10%); }
+  .ficha__kicker--ligament { color: var(--ligament); border-color: rgb(216 226 236 / 34%); background: rgb(216 226 236 / 8%); }
+
+  .ficha__title {
+    margin-bottom: 3px;
+    font-family: var(--font-display);
+    font-size: clamp(23px, 2.1vw, 31px);
+    font-weight: 560;
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  /* El título recibe el foco por código al abrir cada ficha (tabindex="-1"),
+     para que el lector de pantalla la anuncie y el foco no caiga al <body>.
+     No es un control ni está en el orden de tabulación: tras buscar con Enter
+     o recorrer con J/K, el navegador lo daba por foco de teclado y lo
+     enmarcaba en un rectángulo coral que parecía un error de maquetación. */
+  .ficha__title:focus-visible { outline: none; }
+  .ficha__latin {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  .ficha__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+  }
+  .ficha__codes { display: contents; }
+  .ficha__code {
+    padding: 3.5px 9px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-pill);
+    background: rgb(255 240 220 / 5%);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+    /* --text-1, no --text-2: la pastilla al 5 % aclara el fondo y bajaba a 4,2:1 */
+    color: var(--text-1);
+  }
+  .ficha__verified,
+  .ficha__unverified {
+    display: inline-block;
+    padding: 3.5px 10px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  /* Verificado: acento cálido con relleno. Sin verificar: neutro, sin relleno
+     y con borde discontinuo. Se distinguen por el texto y la forma, no solo
+     por el color; y «Sin verificar» ya no usa el ámbar de alerta: informa de
+     que falta la revisión campo por campo, no de que el dato esté mal. */
+  .ficha__verified { border: 1px solid rgb(224 139 118 / 50%); background: var(--accent-dim); color: var(--accent-soft); }
+  .ficha__unverified { border: 1px dashed var(--stroke-3); color: var(--text-1); }
+
+  .ficha__crumb {
+    display: none;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  @media (width <= 1023px) { .ficha__crumb { display: block; } }
+}
+
+/* ══════════════════════════════════════════════ PESTAÑAS — dos variantes ══
+   El estado activo debe leerse de un vistazo sobre vidrio oscuro. La
+   variante A lo resuelve con una pastilla rellena; la B con una barra de
+   acento CLARO y glow. Nunca vino oscuro sobre oscuro: no se ve.        */
+@layer components {
+  .ficha__tabs { padding: 0 14px; }
+  .ficha__tabs::part(nav) { border: none; }
+  .ficha__tabs::part(tabs) { border: none; gap: 2px; }
+  .ficha__tabs::part(body) { padding: 0; }
+
+  sl-tab::part(base) {
+    padding: 11px 13px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.015em;
+    color: var(--text-2);
+    transition: color var(--t-1) var(--ease), background var(--t-1) var(--ease);
+  }
+  sl-tab::part(base):hover { color: var(--text-0); }
+  sl-tab[active]::part(base) { color: var(--text-0); font-weight: 600; }
+
+  /* ---- Variante A · segmented control --------------------------------- */
+
+  /* ---- Variante B · subrayado luminoso -------------------------------- */
+
+  /* ---- Conmutador temporal de variante -------------------------------- */
+  /* Andamiaje temporal: se mantiene accesible pero atenuado, para no competir
+     por la atención con el modelo cada vez que se abre la aplicación. */
+
+}
+
+/* ═════════════════════════════════════════════════════ CUERPO DE LA FICHA */
+@layer components {
+  .ficha__body { padding: 20px 22px 30px; }
+  .ficha__section + .ficha__section { margin-top: 22px; }
+
+  .ficha__section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .ficha__section h3::after { content: ""; flex: 1; height: 1px; background: var(--stroke-1); }
+
+  .ficha__section p,
+  .ficha__section li { font-size: 13px; line-height: 1.62; color: var(--text-0); }
+  .ficha__section ul { margin: 0; padding: 0; list-style: none; }
+  .ficha__section li { position: relative; padding: 6px 0 6px 16px; }
+  .ficha__section li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.75;
+  }
+
+  .ficha__source {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--text-3);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 6px 0 0;
+    padding: 3.5px 11px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-pill);
+    background: rgb(255 240 220 / 5%);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-1);
+  }
+  .chip--link { cursor: pointer; transition: all var(--t-1) var(--ease); }
+  .chip--link:hover { background: var(--accent-dim); border-color: var(--accent-line); color: var(--accent-soft); }
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+
+  .bone-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .bone-chip {
+    padding: 3.5px 11px;
+    border: 1px solid;
+    border-radius: var(--r-pill);
+    background: transparent;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background var(--t-1) var(--ease);
+  }
+  .bone-chip::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 7px;
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+  .bone-chip--origin { color: #a8c8ff; border-color: rgb(111 166 255 / 48%); }
+  .bone-chip--origin::before { background: var(--origin); box-shadow: 0 0 7px var(--origin); }
+  .bone-chip--origin:hover { background: rgb(111 166 255 / 14%); }
+  .bone-chip--insertion { color: #ffc08a; border-color: rgb(255 140 66 / 48%); }
+  .bone-chip--insertion::before { background: var(--insertion); box-shadow: 0 0 7px var(--insertion); }
+  .bone-chip--insertion:hover { background: rgb(255 140 66 / 14%); }
+
+  .link {
+    padding: 0;
+    color: var(--accent);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-line);
+    text-underline-offset: 3px;
+    transition: color var(--t-1) var(--ease);
+  }
+  .link:hover { color: var(--accent-soft); text-decoration-color: var(--accent-soft); }
+
+  .ficha__clinical {
+    padding: 13px 15px;
+    border: 1px solid rgb(224 139 118 / 30%);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--r-md);
+    background: rgb(154 59 48 / 15%);
+    font-size: 12.5px;
+    line-height: 1.62;
+    color: var(--text-1);
+  }
+  .ficha__clinical strong {
+    display: block;
+    margin-bottom: 5px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .ficha__source-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .ficha__source-link:hover { text-decoration: underline; }
+
+  .ficha__fuentes-list { margin: 0; padding: 0; list-style: none; }
+  .ficha__fuentes-list li { padding: 2px 0; }
+  .ficha__fuentes-list li::before { content: none; }
+  .ficha__fuentes-list .ficha__source-link { margin-top: 0; }
+}
+
+/* ═══════════════════════════════════════════════ FISIOTERAPIA Y GALERÍA */
+@layer components {
+  .fisio-empty {
+    padding: 20px;
+    border: 1px dashed var(--stroke-2);
+    border-radius: var(--r-md);
+    text-align: center;
+  }
+  .fisio-empty h3 { margin-bottom: 6px; font-size: 13px; color: var(--text-1); text-transform: none; letter-spacing: 0; }
+  .fisio-empty h3::after { content: none; }
+  .fisio-empty p { font-size: 12px; color: var(--text-3); }
+
+  .fisio-note {
+    padding: 13px 15px;
+    border: 1px solid rgb(224 139 118 / 26%);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--r-md);
+    background: rgb(154 59 48 / 12%);
+  }
+  .fisio-note p { font-size: 12.5px; line-height: 1.66; }
+
+  .fisio-tests { display: flex; flex-direction: column; gap: 10px; }
+  .fisio-test {
+    padding: 13px 15px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-md);
+    background: rgb(255 240 220 / 4%);
+    transition: border-color var(--t-1) var(--ease), background var(--t-1) var(--ease);
+  }
+  .fisio-test:hover { border-color: var(--accent-line); background: rgb(255 240 220 / 6%); }
+  /* En columna, no en fila. Antes el título y la estructura evaluada competían
+     por el mismo renglón con `flex: none` en la segunda: el título se quedaba
+     con cuatro caracteres de ancho y se apilaba letra por letra. La estructura
+     evaluada funciona mejor como subtítulo, y se lee igual en cualquier ancho. */
+  .fisio-test header {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 9px;
+  }
+  .fisio-test h4 {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-0);
+    text-wrap: balance;
+  }
+  .fisio-test__target {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 11px;
+    line-height: 1.35;
+    color: var(--accent);
+  }
+  .fisio-test p { margin: 4px 0; font-size: 12px; line-height: 1.58; color: var(--text-1); }
+  .fisio-test strong { color: var(--text-0); font-weight: 600; }
+
+  .fisio-patologias { margin: 0; padding: 0; list-style: none; }
+  .fisio-patologias li {
+    margin: 6px 0;
+    padding: 8px 0 8px 14px;
+    border-left: 2px solid var(--stroke-2);
+    font-size: 12px;
+    line-height: 1.52;
+    color: var(--text-1);
+  }
+  .fisio-patologias li::before { content: none; }
+  .fisio-patologias strong { color: var(--text-0); }
+
+  .fisio-verification-footer {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid var(--stroke-1);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 10.5px;
+    text-align: right;
+    color: var(--text-3);
+  }
+
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .gallery figure {
+    margin: 0;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-sm);
+    background: rgb(255 240 220 / 4%);
+    overflow: hidden;
+    cursor: zoom-in;
+    transition: border-color var(--t-1) var(--ease);
+  }
+  .gallery figure:hover { border-color: var(--accent-line); }
+  .gallery img { display: block; width: 100%; height: 118px; object-fit: cover; background: #000; }
+  /* overflow-wrap: la licencia de algunas imágenes cita una ruta sin espacios
+     («en.wikipedia.org/wiki/Semispinalis_cervicis_muscle», 50 caracteres) y
+     en la columna de 158 px de la galería se cortaba contra el borde. */
+  .gallery figcaption { padding: 8px 10px; font-size: 11px; line-height: 1.4; color: var(--text-3); overflow-wrap: anywhere; }
+  .gallery__empty {
+    grid-column: 1 / -1;
+    padding: 24px;
+    border: 1px dashed var(--stroke-2);
+    border-radius: var(--r-md);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  /* Lightbox dentro de <sl-dialog> */
+  .lightbox-figure { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+  .lightbox-figure img {
+    max-width: 100%;
+    max-height: 74vh;
+    max-height: 74dvh;
+    object-fit: contain;
+    border-radius: var(--r-sm);
+    background: #000;
+  }
+  .lightbox-figure figcaption { font-size: 13px; text-align: center; color: var(--text-1); overflow-wrap: anywhere; }
+}
+
+/* ══════════════════════════════════════════════════ SHOELACE (tematización) */
+@layer shoelace {
+  :root {
+    --sl-font-sans: var(--font-ui);
+    --sl-font-mono: var(--font-mono);
+    --sl-focus-ring-color: var(--accent);
+    --sl-transition-fast: var(--t-1);
+  }
+
+  sl-drawer::part(panel) {
+    background: linear-gradient(180deg, rgb(34 26 19 / 97%), rgb(20 15 11 / 98%));
+    backdrop-filter: var(--blur);
+    border-inline: 1px solid var(--stroke-1);
+  }
+  sl-drawer::part(header) { padding: 12px 14px 4px; }
+  sl-drawer::part(title) {
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  sl-drawer::part(body) { padding: 6px 12px 14px; }
+  sl-drawer::part(overlay) { background: rgb(8 5 3 / 62%); }
+  sl-drawer::part(close-button) { color: var(--text-2); }
+
+  sl-dialog::part(panel) { background: transparent; box-shadow: none; }
+  sl-dialog::part(overlay) { background: rgb(6 4 3 / 93%); }
+  sl-dialog::part(close-button) { color: var(--text-1); }
+  sl-dialog::part(header) { padding: 0; }
+  sl-dialog::part(body) { padding: 0; }
+
+  sl-tooltip {
+    --sl-tooltip-background-color: #2b2119;
+    --sl-tooltip-color: var(--text-0);
+    --sl-tooltip-font-size: 11px;
+    --sl-tooltip-border-radius: var(--r-xs);
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════ MOTION */
+@layer motion {
+  /* Motion One conduce las animaciones de entrada desde JS (src/ui/motion.js).
+     Aquí solo queda el respeto por la preferencia del sistema. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ════════════════════════════════════════════════ RESULTADOS DE BÚSQUEDA */
+@layer components {
+  /* Pista del atajo de teclado, dentro del propio campo */
+  .search__hint {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    translate: 0 -50%;
+    padding: 2px 7px;
+    border: 1px solid var(--stroke-2);
+    border-radius: 5px;
+    background: rgb(255 240 220 / 6%);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    pointer-events: none;
+    transition: opacity var(--t-1) var(--ease);
+  }
+  .search input:focus ~ .search__hint,
+  .search input:not(:placeholder-shown) ~ .search__hint { opacity: 0; }
+
+  .search__results li { gap: 3px; }
+
+  .sr-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  /* El nombre puede partir línea en vez de recortarse: a 390 px «Ligamento
+     deltoideo (colateral medial del tob…» perdía justo lo que distingue a una
+     estructura de su vecina, y el resultado es lo único que se lee aquí. */
+  .sr-row strong {
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-0);
+  }
+  .search__results mark {
+    background: rgb(224 139 118 / 26%);
+    color: var(--accent-soft);
+    border-radius: 3px;
+    padding: 0 1px;
+  }
+
+  .sr-dot {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+    box-shadow: 0 0 7px -1px currentColor;
+  }
+  .sr-dot--muscle { background: var(--muscle); color: var(--muscle); }
+  .sr-dot--bone { background: var(--bone); color: var(--bone); }
+  .sr-dot--nerve { background: var(--nerve); color: var(--nerve); }
+  .sr-dot--ligament { background: var(--ligament); color: var(--ligament); }
+
+  .sr-tag {
+    margin-left: auto;
+    flex: none;
+    padding: 2px 8px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-pill);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .sr-why {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    /* sin opacity: bajar contraste sobre un fondo variable es el peor sitio */
+    color: var(--accent-soft);
+  }
+
+  /* Resultado traído por el diccionario de intención clínica: se escribió el
+     nombre de un síndrome y esta es la estructura protagonista. La marca es un
+     filo iluminado a la izquierda — sobre fondo oscuro la jerarquía se hace con
+     luz, no con sombra. */
+  .search__results li.is-destacado {
+    position: relative;
+    background: linear-gradient(90deg, rgb(224 139 118 / 9%), transparent 62%);
+  }
+  .search__results li.is-destacado::before {
+    content: "";
+    position: absolute;
+    inset-block: 4px;
+    inset-inline-start: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--accent-soft);
+    box-shadow: 0 0 8px -1px var(--accent-soft);
+  }
+  .search__results li.is-destacado .sr-why::before {
+    content: "▸ ";
+  }
+}
+
+/* ═══════════════════════════════════════════════════ UTILIDADES DE ACCESO */
+@layer components {
+  /* Texto solo para lectores de pantalla: no había ninguna utilidad así. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: var(--r-sm);
+    background: var(--glass-solid);
+    color: var(--text-0);
+    box-shadow: var(--glow-accent);
+    text-decoration: none;
+    translate: 0 -250%;
+    transition: translate var(--t-2) var(--ease);
+  }
+  .skip-link:focus-visible { translate: 0 0; }
+
+  /* Evita el destello de contenido sin estilar mientras el autoloader de
+     Shoelace define cada componente bajo demanda. */
+  sl-drawer:not(:defined),
+  sl-dialog:not(:defined) { display: none; }
+  sl-details:not(:defined),
+  sl-tab-group:not(:defined) { visibility: hidden; }
+
+  /* Objetivos táctiles: por debajo de 24 px incumplen WCAG 2.5.8 */
+  .chip,
+  .bone-chip { min-height: 24px; }
+  .viewer__hint-close { padding: 6px 9px; }
+}
+
+@layer components {
+  /* El disparador del lightbox es un botón que envuelve la imagen */
+  .gallery__open {
+    display: block;
+    width: 100%;
+    padding: 0;
+    cursor: zoom-in;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════ RESPONSIVE
+   Va DESPUÉS de components y shoelace a propósito. Las @layer se resuelven
+   por orden de declaración, no por especificidad ni por media query: cuando
+   estas reglas vivían en `layout`, `components` las pisaba y en móvil no se
+   ocultaba nada — la marca comía la cabecera y el buscador quedaba en 34 px.
+   ========================================================================= */
+@layer responsive {
+
+  /* ══ MODO COMPACTO ═══════════════════════════════════════════════════
+     Bajo 1024px los paneles dejan de flotar y pasan a vivir dentro de un
+     <sl-drawer> (layout.js los traslada con matchMedia). Aquí se neutraliza
+     su posicionamiento fijo y su superficie: el drawer ya pone la suya, y
+     dejarles la propia dibujaba un panel redondeado dentro de otro. */
+  sl-drawer .sidebar,
+  sl-drawer .info-panel {
+    position: static;
+    inset: auto;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    backdrop-filter: none;
+    padding: 0;
+  }
+
+  /* ---- Tablet y por debajo: los paneles pasan a drawers ---------------- */
+  @media (width <= 1023px) {
+    .header__toggle { display: inline-flex; }
+
+    /* el escenario recupera todo el ancho (la barra de vistas ya lo hace
+       sola: --gap-izq y --gap-der valen aquí el margen de la ventana) */
+    .viewer__notice { left: 50%; }
+
+    .viewer__hint,
+    .attach-legend { left: var(--edge-l); }
+    .viewer__hint { top: calc(var(--stage-top) + 58px); width: min(260px, 62vw); }
+
+    /* el breadcrumb se muda a la ficha: en la cabecera ya no cabe */
+    .app-header .breadcrumb { display: none; }
+
+    /* El examen ocupa aquí todo el ancho de abajo, justo donde vive la
+       leyenda, y la leyenda es lo que explica los colores que se revelan al
+       responder. Sube a la esquina libre bajo la barra de vistas. */
+    [data-quiz="on"] .attach-legend {
+      top: calc(var(--stage-top) + 58px);
+      bottom: auto;
+      left: auto;
+      right: var(--gap-der);
+    }
+  }
+
+  /* ---- Escritorio estrecho: la barra de vistas se compacta -------------
+     Entre 1024 y 1220 px los dos paneles siguen flotando y el hueco entre
+     ellos baja a 412 px; la barra a tamaño normal mide 524. Compacta mide
+     407 (medido a 1024), así que cabe entera sin desplazar nada. */
+  @media (1024px <= width <= 1220px) {
+    .viewer__controls { gap: 2px; padding: 4px; }
+    .viewer__controls button { min-width: 30px; padding: 0 7px; }
+    .viewer__divider { margin: 3px 2px; }
+  }
+
+  /* ---- Móvil ----------------------------------------------------------- */
+  @media (width <= 640px) {
+    /* La marca se reduce al monograma: el buscador es lo que importa aquí */
+    .brand__text { display: none; }
+    .brand { padding: 6px; gap: 0; }
+
+    .app-header { gap: 8px; }
+    .header__toggle { width: 38px; height: 38px; }
+
+    .search { max-width: none; }
+    .search input { height: 38px; padding: 0 12px; font-size: 16px; } /* 16px evita el zoom de iOS al enfocar */
+    .search__hint { display: none; }
+
+    /* El input comparte fila con dos botones, así que a 375px se queda en
+       ~212px y el desplegable heredaba ese ancho: nombres truncados con
+       media pantalla vacía al lado. Soltando el anclaje, el desplegable se
+       posiciona respecto al header (que ya es `fixed`) y ocupa el ancho
+       completo. Los resultados son lo que se lee; el input solo se teclea. */
+    .search { position: static; }
+    /* +6 px, no −4: con −4 el desplegable montaba sobre el borde inferior
+       del campo y del monograma (solape medido de 4 px). */
+    .search__results,
+    .search__vacio { inset: calc(100% + 6px) var(--edge-r) auto var(--edge-l); }
+
+    /* La pista ya no se abre sola (vive tras el botón «?»), así que no hay
+       motivo para esconderla: con `display: none` aquí el botón «?» no hacía
+       nada en un teléfono. Se abre a lo ancho, bajo la barra de vistas. */
+    .viewer__hint {
+      left: var(--edge-l);
+      right: var(--edge-r);
+      width: auto;
+      top: calc(var(--stage-top) + 50px);
+    }
+
+    .viewer__controls { padding: 4px; }
+    .viewer__controls button { min-width: 32px; height: 30px; padding: 0 9px; }
+
+    .attach-legend {
+      bottom: var(--edge-b);
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 11px;
+    }
+    .attach-legend__title { display: none; }
+
+    /* La leyenda aquí es una fila baja y la etiqueta va por encima de ella:
+       puede usar todo el ancho. */
+    .viewer__hud { left: var(--edge-l); bottom: calc(var(--edge-b) + 46px); }
+    .viewer__hud-label { font-size: 12px; padding: 5px 11px; }
+
+    /* La ficha entra como hoja inferior: en un móvil, un panel lateral deja
+       la lectura en una columna demasiado estrecha. */
+    #drawer-info { --size: 88vh; --size: 88dvh; }
+    #drawer-info::part(panel) {
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+      border-top: 1px solid var(--stroke-2);
+    }
+
+    #drawer-nav { --size: min(310px, 84vw); }
+
+    .ficha__header { padding: 16px 16px 14px; }
+    .ficha__body { padding: 16px 16px 26px; }
+    .ficha__title { font-size: 25px; }
+    .gallery { grid-template-columns: 1fr; }
+
+    /* El comparador de pestañas es andamiaje temporal: en un teléfono compite
+       por el sitio de la barra de vistas. La decisión se toma en escritorio. */
+  }
+
+  /* ---- Reflujo con poca altura o zoom muy alto (WCAG 1.4.10) -----------
+     La pista no entra en la lista: solo aparece si se pide con «?», y
+     ocultarla aquí dejaba ese botón sin efecto en un móvil apaisado. */
+  @media (height <= 420px) and (width <= 900px) {
+    .attach-legend,
+    .viewer__hud { display: none; }
+  }
+
+  /* ---- Ficha en tableta vertical y teléfono apaisado (641–1023 px) -----
+     El drawer de Shoelace mide 25rem y, con la letra base de 14 px, eso son
+     350 px: las cuatro pestañas (314 px) no cabían en los 304 útiles y
+     Shoelace sacaba sus flechas de desplazamiento, con «Imágenes» medio
+     tapada (medido en un iPad vertical de 810 px y en un iPhone apaisado). */
+  @media (641px <= width <= 1023px) {
+    #drawer-info { --size: min(400px, 92vw); }
+  }
+
+  /* ---- Zonas seguras dentro de los drawers -----------------------------
+     Cada panel se aparta de la muesca y del indicador de inicio por el lado
+     en el que toca el borde de la pantalla. Mismos rellenos que la capa
+     shoelace más el inset, que en un escritorio vale 0. */
+  sl-drawer::part(body) { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  sl-drawer:not([placement="bottom"])::part(header) { padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
+  sl-drawer[placement="start"]::part(header) { padding-left: calc(14px + env(safe-area-inset-left, 0px)); }
+  sl-drawer[placement="start"]::part(body) { padding-left: calc(12px + env(safe-area-inset-left, 0px)); }
+  sl-drawer[placement="end"]::part(header) { padding-right: calc(14px + env(safe-area-inset-right, 0px)); }
+  sl-drawer[placement="end"]::part(body) { padding-right: calc(12px + env(safe-area-inset-right, 0px)); }
+  sl-drawer[placement="bottom"]::part(header) {
+    padding-inline: calc(14px + env(safe-area-inset-left, 0px)) calc(14px + env(safe-area-inset-right, 0px));
+  }
+  sl-drawer[placement="bottom"]::part(body) {
+    padding-inline: calc(12px + env(safe-area-inset-left, 0px)) calc(12px + env(safe-area-inset-right, 0px));
+  }
+}
+
+/* ══════════════════════ PESTAÑAS — variantes sin contenedor ══════════════
+   La pastilla metía una caja dentro de otra: el panel de la ficha ya es un
+   recuadro con borde, y añadirle un contenedor justo debajo del encabezado
+   satura. Estas dos quitan el contenedor y dejan que el estado activo lo
+   marque el propio texto.
+   ======================================================================== */
+@layer responsive {
+
+  /* ---- Variante C · píldora suelta, sin contenedor --------------------- */
+  .ficha__tabs { padding: 10px 14px 0; }
+  .ficha__tabs::part(nav) {
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  .ficha__tabs::part(active-tab-indicator) { display: none; }
+  .ficha__tabs::part(tabs) { gap: 3px; }
+  sl-tab::part(base) {
+    padding: 7px 13px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  sl-tab:not([active])::part(base):hover {
+    background: rgb(255 240 220 / 6%);
+    color: var(--text-0);
+  }
+  sl-tab[active]::part(base) {
+    background: rgb(224 139 118 / 17%);
+    color: #ffd9cc;
+    font-weight: 600;
+  }
+
+  /* Las cuatro pestañas miden 338 px con este relleno. En la ficha de 340 px
+     (1024–1180) y en la hoja inferior del móvil (336 px útiles a 390) no
+     cabían por 2 px, y Shoelace sacaba sus flechas de desplazamiento con
+     «Imágenes» medio escondida. Con 9 px de relleno lateral miden ~306. */
+  @media (width <= 1400px) {
+    .ficha__tabs { padding-inline: 10px; }
+    sl-tab::part(base) { padding: 7px 9px; }
+  }
+
+  /* ---- Variante D · editorial, solo tipografía ------------------------- */
+}
+
+/* ═══════════════════════════════════════════ VISTAS RECIENTEMENTE */
+@layer components {
+  .sidebar h2 { display: flex; align-items: center; gap: 8px; }
+
+  .sidebar__action {
+    margin-left: auto;
+    padding: 2px 7px;
+    border-radius: var(--r-xs);
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    transition: color var(--t-1) var(--ease), background var(--t-1) var(--ease);
+  }
+  .sidebar__action:hover { color: var(--accent); background: rgb(255 240 220 / 7%); }
+
+  .recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .recent-list button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: var(--r-xs);
+    font-size: 12.5px;
+    text-align: left;
+    color: var(--text-1);
+    transition: background var(--t-1) var(--ease), color var(--t-1) var(--ease);
+  }
+  .recent-list button:hover { background: var(--accent-dim); color: var(--text-0); }
+  /* El nombre parte línea en vez de cortarse con «…», igual que en la lista
+     de regiones justo encima. Recortado, «Ligamento colateral peroneo (LCL)»
+     y «Ligamento colateral tibial…» se leían igual a 1024 px: lo que se corta
+     es justo lo que distingue a una estructura de su vecina. El punto y la
+     región se alinean con la primera línea. */
+  .recent-list button { align-items: flex-start; }
+  .recent-list .region__dot { margin: 5px 0 0; flex: none; }
+  .recent-list span:last-child {
+    margin-left: auto;
+    margin-top: 2px;
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .recent-list .n {
+    min-width: 0;
+    line-height: 1.3;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════ MODO EXAMEN */
+@layer components {
+  .quiz-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-md);
+    background: var(--accent-dim);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent-soft);
+    transition: background var(--t-1) var(--ease), box-shadow var(--t-1) var(--ease);
+  }
+  .quiz-start:hover {
+    background: rgb(224 139 118 / 22%);
+    box-shadow: 0 0 18px -6px rgb(224 139 118 / 55%);
+  }
+  .quiz-start[aria-pressed="true"] {
+    background: linear-gradient(180deg, rgb(224 139 118 / 30%), rgb(154 59 48 / 24%));
+    color: #ffeee7;
+    box-shadow: inset 0 1px 0 rgb(255 214 200 / 26%), 0 0 0 1px var(--accent-line);
+  }
+
+  /* Panel flotante: ocupa el hueco del visor, no tapa el modelo señalado */
+  /* Comparador. Vive abajo a la izquierda, no a la derecha: el panel de ficha
+     ya ocupa ese lado y comparar exige ver el modelo con las dos estructuras
+     contorneadas a la vez. */
+  /* Arranca en el borde del hueco libre, no en el de la ventana: con los
+     paneles flotando (≥1024 px) se montaba sobre la barra lateral —264×460 px
+     tapados a 1440, con la lista de regiones debajo— y sobre la leyenda.
+     En compacto --gap-izq es el margen de la ventana y no cambia nada. */
+  .cmp-panel {
+    position: fixed;
+    left: var(--gap-izq);
+    bottom: var(--edge-b);
+    z-index: 18;
+    width: min(560px, calc(100vw - var(--gap-izq) - var(--gap-der)));
+    max-height: min(60vh, 460px);
+    max-height: min(60dvh, 460px);
+    display: flex;
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-xl);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--lift-3);
+    overflow: hidden;
+  }
+  .cmp {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+  }
+  .cmp__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--stroke-1);
+  }
+  .cmp__title {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .cmp__swap,
+  .cmp__close {
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-pill);
+    background: transparent;
+    color: var(--text-2);
+    width: 24px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+  }
+  .cmp__swap:hover,
+  .cmp__close:hover {
+    color: var(--accent-soft);
+    border-color: var(--accent-soft);
+  }
+
+  .cmp__espera {
+    margin: 12px 12px 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--text-1);
+  }
+  .cmp__ayuda {
+    margin: 0 12px 12px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* La tabla desborda a poca anchura: scrollea DENTRO de su contenedor, nunca
+     la página. */
+  .cmp__scroll {
+    overflow: auto;
+    padding: 4px 12px 12px;
+  }
+  .cmp__tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .cmp__tabla th,
+  .cmp__tabla td {
+    padding: 6px 9px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--stroke-1);
+  }
+  /* Sin nowrap: con «Depresor del ángulo de la boca (triangular de los
+     labios)», 57 caracteres, la cabecera obligaba a la tabla entera a crecer
+     y había que desplazarla en horizontal para leer la otra columna. */
+  .cmp__tabla thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--glass-solid);
+    color: var(--text-1);
+    font-size: 13px;
+    line-height: 1.3;
+    vertical-align: bottom;
+  }
+  .cmp__tabla tbody th {
+    width: 1%;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--text-3);
+  }
+  /* Reparto fijo: columna de etiquetas estrecha y las dos estructuras a
+     partes iguales. Con el reparto automático y 150 px mínimos por columna,
+     la tabla medía 474 px dentro del comparador de 406 (a 1024 px) y de 368
+     (a 390 px): para leer la segunda estructura había que desplazar la tabla
+     de lado, que es justo lo contrario de comparar. */
+  .cmp__tabla { table-layout: fixed; }
+  .cmp__tabla thead td:first-child { width: 104px; }
+  .cmp__tabla td {
+    color: var(--text-2);
+    overflow-wrap: break-word;
+  }
+  /* Lo que coincide en las dos columnas también informa: se marca en vez de
+     dejar que el ojo lo compare palabra a palabra. */
+  .cmp__tabla tr.is-igual td {
+    color: var(--accent-soft);
+  }
+
+  .cmp__punto {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-inline-end: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 7px -1px currentColor;
+  }
+  .cmp__punto--a { background: #4fc3f7; color: #4fc3f7; }
+  .cmp__punto--b { background: #ffb74d; color: #ffb74d; }
+
+  /* Botón de comparar, hermano del de favorito. */
+  .ficha__cmp {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-pill);
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color 140ms ease, border-color 140ms ease;
+  }
+  .ficha__cmp:hover {
+    color: var(--accent-soft);
+    border-color: var(--accent-soft);
+  }
+
+  .quiz {
+    position: fixed;
+    right: var(--edge-r);
+    bottom: var(--edge-b);
+    z-index: 18;
+    width: min(380px, calc(100vw - var(--edge-l) - var(--edge-r)));
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-xl);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--lift-3);
+    overflow: hidden;
+  }
+
+  .quiz__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--stroke-1);
+  }
+  .quiz__title {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .quiz__marcador {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-1);
+  }
+  .quiz__close {
+    padding: 2px 7px;
+    border-radius: var(--r-xs);
+    font-size: 16px;
+    line-height: 1;
+    color: var(--text-3);
+  }
+  .quiz__close:hover { color: var(--text-0); background: rgb(255 240 220 / 9%); }
+
+  .quiz__filtros { display: flex; gap: 6px; padding: 10px 14px 0; }
+  .quiz__select {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-sm);
+    background: var(--glass-solid);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: 11.5px;
+  }
+
+  .quiz__body { padding: 12px 14px 14px; }
+  .quiz__pregunta {
+    margin-bottom: 10px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--text-0);
+  }
+  .quiz__opts { display: flex; flex-direction: column; gap: 6px; }
+  .quiz__opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-sm);
+    background: rgb(255 240 220 / 4%);
+    font-size: 13px;
+    text-align: left;
+    color: var(--text-0);
+    transition: background var(--t-1) var(--ease), border-color var(--t-1) var(--ease);
+  }
+  .quiz__opt:hover:not(:disabled) { background: rgb(255 240 220 / 9%); border-color: var(--stroke-2); }
+  .quiz__opt kbd {
+    flex: none;
+    padding: 1px 6px;
+    border: 1px solid var(--stroke-2);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-3);
+  }
+  .quiz__opt:disabled { cursor: default; opacity: 0.6; }
+  .quiz__opt.is-correct {
+    opacity: 1;
+    border-color: rgb(126 200 140 / 60%);
+    background: rgb(126 200 140 / 16%);
+    color: #cdf0d4;
+  }
+  .quiz__opt.is-correct kbd { border-color: rgb(126 200 140 / 50%); color: #cdf0d4; }
+  .quiz__opt.is-wrong {
+    opacity: 1;
+    border-color: rgb(224 119 108 / 60%);
+    background: rgb(224 119 108 / 16%);
+    color: #ffc9c2;
+  }
+
+  .quiz__feedback { min-height: 20px; margin-top: 10px; font-size: 12.5px; color: var(--text-1); }
+  .quiz__feedback .ok { color: #8fd79c; }
+  .quiz__feedback .ko { color: #f0a89b; }
+  .quiz__feedback em { font-family: var(--font-display); color: var(--text-2); }
+
+  .quiz__next {
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-sm);
+    background: var(--accent-dim);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent-soft);
+  }
+  .quiz__next:hover { background: rgb(224 139 118 / 22%); }
+  .quiz__empty { font-size: 12.5px; color: var(--text-3); }
+
+  /* Durante el examen la ficha se oculta: enseñaría la respuesta */
+  [data-quiz="on"] .info-panel,
+  [data-quiz="on"] .breadcrumb,
+  [data-quiz="on"] .viewer__hud { display: none; }
+}
+
+@layer responsive {
+  /* La leyenda de inserciones vive en la misma esquina que el comparador y
+     quedaba debajo de él (142×86 px tapados). Mientras se compara sube a la
+     esquina superior derecha del hueco, bajo la barra de vistas, que ahí
+     está libre a todos los anchos. Va en esta capa y no en `components`
+     porque las reglas de `.attach-legend` por anchura viven aquí y, siendo
+     capa posterior, ganarían siempre. */
+  body:has(#cmp-panel:not([hidden])) .attach-legend {
+    top: calc(var(--stage-top) + 58px);
+    bottom: auto;
+    left: auto;
+    right: var(--gap-der);
+  }
+
+  @media (width <= 1023px) {
+    .quiz { right: var(--edge-r); left: var(--edge-l); width: auto; }
+    [data-quiz="on"] .header__toggle[aria-controls="drawer-info"] { display: none; }
+  }
+  @media (width <= 640px) {
+    .quiz { bottom: var(--edge-b); max-height: 72vh; max-height: 72dvh; overflow-y: auto; }
+    /* Dos por fila, no cuatro apilados: el panel del examen tapa la mitad
+       baja de la pantalla y la estructura señalada está detrás. Apilados
+       sumaban 4 filas de desplegables antes de llegar a la pregunta. */
+    .quiz__filtros { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+}
+
+@layer components {
+  /* Estado del repaso espaciado: qué toca hoy y qué hay asentado */
+  /* Favorito: la estrella vive en la fila de metadatos de la ficha, junto a
+     los códigos. Apagada es solo contorno; encendida se rellena y se ilumina
+     — sobre fondo oscuro el estado se marca con luz, no con sombra. */
+  .ficha__fav {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-pill);
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+  }
+  .ficha__fav:hover {
+    color: var(--accent-soft);
+    border-color: var(--accent-soft);
+  }
+  .ficha__fav.is-on {
+    color: var(--accent-soft);
+    border-color: var(--accent-soft);
+    background: var(--accent-dim);
+    box-shadow: 0 0 10px -3px var(--accent-soft);
+  }
+
+  /* Anotación propia: va DESPUÉS de las pestañas y a ancho completo. Metida en
+     una pestaña no se volvería a leer, que es justo lo contrario de para lo
+     que sirve. */
+  .ficha__nota {
+    margin: 14px 0 4px;
+  }
+  .ficha__nota-texto {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 9px 11px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-sm, 8px);
+    background: rgb(255 255 255 / 3%);
+    color: var(--text-1);
+    font: inherit;
+    font-size: 13.5px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .ficha__nota-texto:focus {
+    outline: none;
+    border-color: var(--accent-soft);
+    box-shadow: 0 0 0 1px var(--accent-soft);
+  }
+  .ficha__nota-texto::placeholder {
+    color: var(--text-3);
+  }
+  /* Punto luminoso: dice "aquí hay algo escrito" sin robar atención. */
+  .ficha__nota-marca {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-inline-start: 7px;
+    vertical-align: 2px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    box-shadow: 0 0 6px -1px var(--accent-soft);
+  }
+
+  .ficha__nota-estado {
+    margin: 5px 0 0;
+    min-height: 12px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* Modo "señalar en el modelo": el nombre pedido es lo único que se lee, así
+     que manda en la jerarquía. Sin caja ni sombra — sobre fondo oscuro basta
+     con el filo iluminado a la izquierda. */
+  .quiz__diana {
+    margin: 10px 0 6px;
+    padding: 10px 0 10px 14px;
+    border-inline-start: 2px solid var(--accent-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .quiz__diana strong {
+    font-family: var(--font-display, inherit);
+    font-size: 19px;
+    line-height: 1.2;
+    color: var(--text-1);
+  }
+  .quiz__diana em {
+    font-size: 12.5px;
+    color: var(--text-2);
+  }
+  .quiz__ayuda {
+    margin: 0 0 4px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .quiz__estado {
+    margin-bottom: 10px;
+    padding: 7px 10px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-sm);
+    background: rgb(255 240 220 / 4%);
+    font-size: 11.5px;
+    color: var(--text-2);
+  }
+  .quiz__estado b { color: var(--accent-soft); font-weight: 600; }
+}
+
+/* ═══════════════════════════════════════ AVISO DE CONTEXTO WEBGL PERDIDO
+   Lo crea scene.js (avisoContexto) cuando el navegador tira el contexto del
+   visor por falta de memoria. Centrado en el hueco libre del visor, igual que
+   la barra de vistas, y por encima de sus overlays; los drawers quedan
+   encima (si se está leyendo la ficha, el aviso espera debajo).
+   ========================================================================= */
+@layer components {
+  .viewer__contexto {
+    position: fixed;
+    top: calc(var(--stage-top) + 70px);
+    left: var(--gap-izq);
+    right: var(--gap-der);
+    width: fit-content;
+    max-width: min(400px, calc(100vw - var(--gap-izq) - var(--gap-der)));
+    margin-inline: auto;
+    z-index: 26;
+    display: grid;
+    gap: 8px;
+    padding: 16px 18px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-lg);
+    background: var(--glass-solid);
+    box-shadow: var(--lift-3), var(--glow-accent);
+    color: var(--text-1);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .viewer__contexto strong {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-0);
+  }
+  .viewer__contexto[data-estado="recuperado"] { border-color: var(--stroke-2); box-shadow: var(--lift-3); }
+  .viewer__contexto-btn {
+    justify-self: start;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--r-sm);
+    background: var(--accent-dim);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-soft);
+  }
+  .viewer__contexto-btn:hover { background: rgb(224 139 118 / 22%); }
+}
+
+/* ═══════════════════════════════════════════════ PANTALLAS TÁCTILES
+   Objetivos de 44 px donde se toca con el dedo (WCAG 2.5.5 y la guía de
+   Apple). Antes, según su propio CSS: estrella y comparar 26×22, cerrar el
+   examen y el comparador ~22 de alto, «Vaciar» ~15, botones de vista de 30
+   y de cabecera de 38. Va por `pointer: coarse` y no por anchura: una
+   tableta de 1024 px también se toca con el dedo, y un escritorio estrecho no.
+   ========================================================================= */
+@layer responsive {
+  @media (hover: none) and (pointer: coarse) {
+    .viewer__hint .viewer__hint-tactil { display: flex; }
+    .viewer__hint .viewer__hint-raton { display: none; }
+  }
+
+  @media (pointer: coarse) {
+    .header__toggle { width: 44px; height: 44px; }
+    .search input { height: 44px; }
+
+    /* Las pastillas conservan su tamaño visual; el área de toque crece con
+       relleno en el anfitrión, que es quien recibe el toque. */
+    sl-tab { padding-block: 7px; }
+
+    .ficha__meta { gap: 8px; }
+    .ficha__fav,
+    .ficha__cmp,
+    .quiz__close,
+    .cmp__close,
+    .cmp__swap,
+    .viewer__hint-close {
+      min-width: 44px;
+      min-height: 44px;
+    }
+    .quiz__header,
+    .cmp__head { padding-block: 4px; }
+
+    .layer-list button,
+    .recent-list button { min-height: 44px; }
+    /* La fila reciente alinea arriba (el nombre puede ocupar dos líneas):
+       el alto de toque se reparte con relleno para que una sola línea no
+       quede pegada al borde superior. */
+    .recent-list button { padding-block: 13px; }
+    /* La parte vive en el shadow DOM, fuera del `box-sizing` del reset: con
+       su relleno de 8 px cada región medía 60 px y la lista se estiraba. */
+    .region-list sl-details::part(header) { box-sizing: border-box; min-height: 44px; padding-block: 0; }
+    .sidebar__action { min-height: 44px; padding-inline: 12px; }
+
+    .quiz__opt,
+    .quiz__next,
+    .quiz__select { min-height: 44px; }
+
+    /* Las pastillas de hueso y de músculo van en rejillas de hasta 28: a 44
+       px de alto la del húmero ocuparía media pantalla. Se quedan en 32 px a
+       la vista, pero su zona de toque mide 44: un ::after transparente
+       sobresale 6 px por arriba y por abajo, y la separación entre filas
+       sube a 12 px para que las zonas de dos filas no se pisen (un toque en
+       el hueco no puede caer en la pastilla de la fila de al lado). */
+    .chip--link,
+    .bone-chip { position: relative; min-height: 32px; }
+    .chip--link::after,
+    .bone-chip::after {
+      content: "";
+      position: absolute;
+      inset: -7px -1px; /* desde el borde de relleno: 6 px fuera del borde de 1 px */
+    }
+    .bone-chips { row-gap: 12px; }
+    /* Las pastillas de la rejilla llevan además 4 px de margen superior. */
+    .chip-grid { row-gap: 8px; }
+
+    /* Fuentes de la ficha: enlaces sueltos en lista, no dentro de una frase,
+       así que también son objetivos de toque. */
+    .ficha__source-link { display: inline-flex; align-items: center; min-height: 44px; }
+    /* El nervio de la ficha va solo en su párrafo (21 px de alto): misma
+       zona de toque transparente que las pastillas. */
+    .link { position: relative; }
+    .link::after { content: ""; position: absolute; inset: -12px -4px; }
+    /* Estructuras de una región: nombre y nombre latino en dos líneas, 42 px. */
+    .region__items button { min-height: 44px; }
+    /* «Modo examen» en la barra lateral: 37 px. */
+    .quiz-start { min-height: 44px; }
+
+    sl-drawer::part(close-button__base),
+    sl-dialog::part(close-button__base) { padding: 15px; }
+
+    /* La barra de vistas también a 44 en tableta apaisada. Entre 1024 y
+       1220 px no cabe entera en el hueco entre paneles (11 botones de 44 son
+       ~530 px y a 1080 quedan 464): desplaza como en el teléfono, con el
+       borde difuminado del lado que esconde botones. Se prefirió a botones de
+       30×32, que con el dedo fallaban. */
+    .viewer__controls button { min-width: 44px; height: 44px; }
+
+    /* El visor es de OrbitControls, no del navegador: sin el resaltado gris
+       de Safari y Chrome al tocar (cubría el canvas entero), sin menú de
+       mantener pulsado y sin seleccionar texto al girar. touch-action ya lo
+       pone OrbitControls en línea; se repite aquí por si se cargara tarde. */
+    #viewer-canvas {
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .viewer__bar { -webkit-user-select: none; user-select: none; }
+
+    /* Sin zoom por doble toque en la interfaz (Safari lo hace aunque el
+       viewport sea de móvil): dos toques rápidos en J/K, en una vista o en
+       una pestaña acercaban la página entera y descolocaban los paneles
+       fijos. `manipulation` deja el desplazamiento y el pellizco de
+       accesibilidad; solo quita el doble toque. Los paneles con scroll
+       propio también: el valor se corta en cada contenedor de scroll. */
+    .app-header,
+    .viewer__bar,
+    .sidebar,
+    .info-panel,
+    .quiz,
+    .cmp-panel,
+    .search__results,
+    sl-drawer::part(header),
+    sl-drawer::part(body),
+    button,
+    a[href],
+    select,
+    textarea,
+    input,
+    sl-tab,
+    sl-details { touch-action: manipulation; }
+
+    /* El desplazamiento de un panel no arrastra la página ni rebota fuera. */
+    .search__results,
+    .quiz,
+    .cmp-panel,
+    sl-drawer::part(body),
+    sl-dialog::part(body) { overscroll-behavior: contain; }
+
+    /* Safari de iOS acerca la página al enfocar un campo con letra de menos
+       de 16 px, y no la devuelve al salir: con la cabecera y los paneles
+       fijos, la interfaz quedaba ampliada y cortada. En el teléfono ya se
+       hacía para el buscador; en la tableta también hace falta. */
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+    select,
+    textarea { font-size: 16px; }
+
+    /* Teclado virtual: el desplegable del buscador se acorta hasta donde
+       acaba lo visible (layout.js publica --vv-fondo con visualViewport). En
+       un teléfono apaisado medía 195 px y el teclado tapaba casi todo. */
+    .search__results {
+      max-height: min(50dvh, 360px, calc(var(--vv-fondo, 100dvh) - var(--stage-top) - 8px));
+    }
+  }
+
+  /* Hover pegado: Safari aplica :hover al tocar y no lo quita hasta tocar
+     otra cosa, así que la última vista pulsada parecía «encendida». Se anula
+     en los controles que más se tocan; el estado activo real (.is-active,
+     pestaña activa) no se toca. */
+  @media (hover: none) {
+    .viewer__controls button:not(.is-active):hover { background: none; color: var(--text-1); }
+    .header__toggle:hover { color: var(--text-1); border-color: var(--stroke-1); }
+    .layer-list button:hover { background: none; }
+    sl-tab:not([active])::part(base):hover { background: none; color: var(--text-2); }
+  }
+
+  @media (pointer: coarse) and (width <= 1023px) {
+    .viewer__hint { top: calc(var(--stage-top) + 64px); }
+    [data-quiz="on"] .attach-legend,
+    body:has(#cmp-panel:not([hidden])) .attach-legend { top: calc(var(--stage-top) + 66px); }
+  }
+
+  /* Comparador en el teléfono: cada punto de la columna de etiquetas es texto
+     que le falta a las estructuras. Las etiquetas pueden partir línea. */
+  @media (width <= 640px) {
+    .cmp__tabla thead td:first-child { width: 84px; }
+    .cmp__tabla tbody th { white-space: normal; }
+    .cmp__tabla th,
+    .cmp__tabla td { padding-inline: 7px; }
+  }
+}
+
+/* ═══════════════════════════ AYUDA, CRÉDITOS Y MIS DATOS (carril B, v1.0)
+   Cabecera («?» y ⓘ), sello de revisión tocable, estado vacío con recuento,
+   bloque «Ayuda y datos» del menú, los tres diálogos y el error de arranque.
+   Todo se maneja con el dedo: nada depende de hover y cada objetivo táctil
+   llega a 44 px con puntero grueso (bloque responsive de abajo).
+   ========================================================================= */
+@layer components {
+  /* ---- Botones de cabecera ---------------------------------------------- */
+  .header__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--r-md);
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--stroke-1);
+    box-shadow: var(--lift-1);
+    color: var(--text-1);
+    transition: color var(--t-1) var(--ease), border-color var(--t-1) var(--ease);
+  }
+  .header__btn:hover { color: var(--accent); border-color: var(--accent-line); }
+  /* Un «?» tipográfico y no el icono de círculo: el botón de la barra del
+     visor ya usa ese icono para la chuleta de controles. */
+  .header__btn--guia span {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    translate: 0 -1px;
+  }
+
+  /* ---- Botones genéricos de los diálogos -------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-md);
+    background: rgb(255 240 220 / 5%);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    color: var(--text-0);
+    cursor: pointer;
+    transition: background var(--t-1) var(--ease), border-color var(--t-1) var(--ease);
+  }
+  .btn:hover { background: rgb(255 240 220 / 10%); border-color: var(--stroke-3); }
+  .btn:disabled,
+  .btn:has(input:disabled) { opacity: 0.5; cursor: default; }
+  .btn--primario {
+    border-color: var(--accent-line);
+    background: linear-gradient(180deg, rgb(224 139 118 / 30%), rgb(154 59 48 / 26%));
+    box-shadow: inset 0 1px 0 rgb(255 214 200 / 18%);
+    color: #ffeee7;
+  }
+  .btn--primario:hover { background: linear-gradient(180deg, rgb(224 139 118 / 40%), rgb(154 59 48 / 34%)); border-color: var(--accent-soft); }
+  .btn--peligro { border-color: rgb(224 119 108 / 60%); background: rgb(224 119 108 / 18%); color: #ffd6cf; }
+  .btn--peligro:hover { background: rgb(224 119 108 / 28%); border-color: var(--danger); }
+  .btn--texto {
+    border-color: transparent;
+    background: none;
+    padding-inline: 8px;
+    font-weight: 500;
+    color: var(--accent-soft);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-line);
+    text-underline-offset: 3px;
+  }
+  .btn--texto:hover { background: rgb(255 240 220 / 6%); border-color: transparent; }
+
+  /* ---- Sello de revisión en la ficha ------------------------------------ */
+  /* El botón es el área de toque; la pastilla de dentro conserva su tamaño. */
+  .ficha__sello {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--r-pill);
+  }
+  .ficha__sello:hover .ficha__unverified { border-color: var(--text-2); color: var(--text-0); }
+  .ficha__sello:hover .ficha__verified { border-color: var(--accent-soft); }
+  .ficha__sello[aria-expanded="true"] .ficha__unverified,
+  .ficha__sello[aria-expanded="true"] .ficha__verified { box-shadow: 0 0 0 1px currentColor; }
+  .ficha__sello-nota {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-md);
+    background: rgb(255 240 220 / 4%);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-1);
+  }
+  .ficha__sello-nota .link { font-size: 12.5px; }
+  /* Muestra del sello dentro de la guía y de «Acerca de» */
+  .ficha__sello-muestra { margin-right: 6px; vertical-align: 1px; }
+
+  /* ---- Estado vacío de la ficha ----------------------------------------- */
+  .info-panel__recuento { margin-top: 14px; font-size: 12px; color: var(--text-2); }
+  .info-panel__recuento strong { color: var(--accent-soft); font-weight: 600; }
+  .info-panel__empty .info-panel__sellos { margin-top: 2px; font-size: 12px; }
+
+  /* ---- «Ayuda y datos» en el menú lateral ------------------------------- */
+  .ayuda-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ayuda-list button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 9px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    text-align: left;
+    color: var(--text-1);
+    transition: background var(--t-1) var(--ease), color var(--t-1) var(--ease);
+  }
+  .ayuda-list button:hover { background: rgb(255 240 220 / 7%); color: var(--text-0); }
+
+  /* ---- Contenido de los diálogos ---------------------------------------- */
+  .dlg__cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-1);
+  }
+  .dlg__intro { font-size: 14.5px; color: var(--text-0); }
+  .dlg__aviso {
+    padding: 12px 14px;
+    border: 1px solid rgb(224 139 118 / 30%);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--r-md);
+    background: rgb(154 59 48 / 15%);
+    font-size: 13.5px;
+    color: var(--text-0);
+  }
+  .dlg__seccion { display: flex; flex-direction: column; gap: 10px; }
+  .dlg__seccion > .btn { align-self: flex-start; }
+  .dlg__seccion h3 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  /* Los títulos reciben el foco por código al cambiar de paso (Mis datos) */
+  .dlg__seccion h3:focus-visible { outline: none; }
+  .dlg__seccion h4 { margin-top: 6px; font-size: 13.5px; font-weight: 600; color: var(--text-0); }
+  .dlg a {
+    color: var(--accent-soft);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-line);
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+  .dlg a:hover { text-decoration-color: var(--accent-soft); }
+  .dlg b,
+  .dlg strong { color: var(--text-0); font-weight: 600; }
+  .dlg kbd {
+    display: inline-block;
+    min-width: 1.6em;
+    padding: 1px 6px;
+    border: 1px solid var(--stroke-2);
+    border-radius: 4px;
+    background: rgb(255 240 220 / 6%);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-align: center;
+    color: var(--text-0);
+  }
+  .dlg__botones { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dlg__pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+
+  /* ---- Guía: apartados plegables ---------------------------------------- */
+  .dlg__cuerpo.guia { gap: 8px; }
+  .guia > .dlg__intro { margin-bottom: 4px; }
+  .guia__apartado {
+    border: 1px solid var(--stroke-1);
+    border-radius: var(--r-md);
+    background: rgb(255 240 220 / 3%);
+  }
+  .guia__apartado[open] { border-color: var(--stroke-2); background: rgb(255 240 220 / 5%); }
+  .guia__apartado > summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: var(--r-md);
+    list-style: none;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-0);
+    cursor: pointer;
+  }
+  .guia__apartado > summary::-webkit-details-marker { display: none; }
+  .guia__apartado > summary::after {
+    content: "";
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-left: auto;
+    border-right: 1.6px solid var(--text-2);
+    border-bottom: 1.6px solid var(--text-2);
+    rotate: 45deg;
+    translate: 0 -2px;
+    transition: rotate var(--t-1) var(--ease), translate var(--t-1) var(--ease);
+  }
+  .guia__apartado[open] > summary { color: var(--accent-soft); }
+  .guia__apartado[open] > summary::after { rotate: -135deg; translate: 0 2px; }
+  .guia__apartado > summary:hover { background: rgb(255 240 220 / 5%); }
+  .guia__apartado > :not(summary) { margin: 0 14px 12px; }
+  .guia__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 0;
+    list-style: none;
+  }
+  .guia__gesto {
+    display: inline-block;
+    min-width: 78px;
+    margin-right: 6px;
+    padding: 1px 8px;
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-pill);
+    background: rgb(255 240 220 / 6%);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-align: center;
+    color: var(--text-0);
+  }
+  .guia__ico { margin-right: 3px; vertical-align: -4px; color: var(--accent-soft); }
+  .guia__secundario { font-size: 13px; color: var(--text-2); }
+  .guia__atajos {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 7px 12px;
+    align-items: baseline;
+    font-size: 13px;
+  }
+  .guia__atajos dt { white-space: nowrap; }
+  .guia__atajos dd { margin: 0; }
+
+  /* ---- Acerca de ---------------------------------------------------------- */
+  .acerca__barra {
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: var(--bg-3);
+    overflow: hidden;
+  }
+  .acerca__barra span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent-deep), var(--accent-soft));
+  }
+  .acerca__sellos { display: grid; gap: 4px; margin: 4px 0 0; }
+  .acerca__sellos dt { margin-top: 8px; }
+  .acerca__sellos dd { margin: 0; font-size: 13.5px; }
+  .acerca__lista { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+  .acerca__lista li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--stroke-1);
+    font-size: 13.5px;
+  }
+  .acerca__lista li > span { min-width: 0; }
+  /* Cada enlace de la lista es un objetivo táctil propio: 44 px de alto */
+  .acerca__lista a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+  .acerca__lista li > a { flex: none; font-family: var(--font-mono); font-size: 11.5px; }
+  .acerca__uso { font-size: 12.5px; color: var(--text-2); }
+  .acerca__nota { font-size: 12.5px; color: var(--text-2); }
+  .acerca__version {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-align: center;
+    color: var(--gold);
+  }
+
+  /* ---- Mis datos ----------------------------------------------------------- */
+  .datos__cifras { color: var(--text-0); }
+  .datos__ultima,
+  .datos__explica,
+  .datos__nota,
+  .datos__origen { font-size: 12.5px; color: var(--text-2); }
+  .datos__elegir { position: relative; align-self: flex-start; }
+  .datos__elegir:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .datos__lista { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; color: var(--text-0); }
+  .datos__lista li::before { content: "·"; margin-right: 8px; color: var(--accent); }
+  .datos__opciones { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .datos__opciones .datos__explica { margin-bottom: 10px; }
+  .datos__acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+  .datos__estado { font-size: 13.5px; color: var(--text-1); }
+  .datos__estado:focus-visible { outline: none; }
+  .datos__estado[data-tipo="ok"] { color: #a8e0b4; }
+  .datos__estado[data-tipo="error"] { color: #f4b1a6; }
+  .datos code { padding: 0 4px; font-size: 0.85em; }
+
+  /* ---- Error de arranque (sustituye al contenido del cargador) ----------- */
+  .viewer__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: min(380px, calc(100vw - 40px));
+    text-align: center;
+  }
+  .viewer__error h2 { font-family: var(--font-display); font-size: 20px; color: var(--text-0); }
+  .viewer__error p { font-size: 14px; color: var(--text-1); }
+  .viewer__error details { font-size: 12px; color: var(--text-3); }
+  .viewer__error summary { display: flex; align-items: center; justify-content: center; min-height: 44px; cursor: pointer; }
+  .viewer__error code { display: block; margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; }
+}
+
+@layer shoelace {
+  /* La regla global de sl-dialog es para la imagen ampliada (panel
+     transparente sobre fondo casi negro). Estos son diálogos de lectura:
+     panel de vidrio opaco, cabecera con título y cuerpo que desplaza. */
+  .dlg {
+    --width: min(580px, calc(100vw - 32px));
+  }
+  .dlg::part(overlay) { background: rgb(8 5 3 / 72%); }
+  .dlg::part(panel) {
+    max-height: calc(100dvh - 32px);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-xl);
+    background: linear-gradient(180deg, rgb(38 29 21 / 98%), rgb(22 17 12 / 99%));
+    box-shadow: var(--lift-3);
+  }
+  .dlg::part(header) { border-bottom: 1px solid var(--stroke-1); }
+  .dlg::part(title) {
+    padding: 16px 20px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-0);
+  }
+  .dlg::part(header-actions) { padding-inline-end: 8px; }
+  .dlg::part(close-button) { font-size: 18px; color: var(--text-1); }
+  .dlg::part(body) { padding: 18px 20px 22px; overscroll-behavior: contain; }
+  .dlg::part(footer) { padding: 12px 20px 16px; border-top: 1px solid var(--stroke-1); }
+}
+
+@layer responsive {
+  @media (width <= 640px) {
+    /* En el teléfono no caben el buscador y los dos botones: «Acerca de»
+       sigue en el menú, al pie de la guía y en el estado vacío de la ficha. */
+    .header__btn--acerca { display: none; }
+    .header__btn { width: 38px; height: 38px; }
+
+    /* Casi pantalla completa, respetando la muesca y la barra de inicio */
+    .dlg { --width: calc(100vw - 20px); }
+    .dlg::part(panel) {
+      max-width: calc(100vw - 20px);
+      max-height: calc(100dvh - 20px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    }
+    .dlg::part(title) { padding: 14px 16px; font-size: 18px; }
+    .dlg::part(body) { padding: 16px 16px 20px; }
+    .dlg::part(footer) { padding: 10px 16px 14px; }
+    .dlg__seccion > .btn,
+    .datos__elegir,
+    .datos__opciones .btn { align-self: stretch; }
+  }
+
+  @media (pointer: coarse) {
+    .header__btn { width: 44px; height: 44px; }
+    .ficha__sello,
+    .ayuda-list button,
+    .info-panel__empty .info-panel__sellos,
+    .ficha__sello-nota .link { min-height: 44px; }
+    .ficha__sello-nota .link { display: inline-flex; align-items: center; }
+  }
+}

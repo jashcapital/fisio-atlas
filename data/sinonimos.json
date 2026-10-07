@@ -1,0 +1,1407 @@
+{
+  "nota": "Diccionario de intención clínica. Un estudiante teclea el nombre del síndrome, no el de la estructura. La búsqueda difusa no puede resolverlo sola: 44 fichas mencionan el túnel carpiano en sus patologías y ninguna se declara protagonista. Aquí se declara. `q` son las formas de escribirlo (sin acentos, en minúscula); `ids` van en orden de relevancia clínica; `etiqueta` es lo que se muestra como motivo del resultado.",
+  "entradas": [
+    {
+      "q": [
+        "tunel carpiano",
+        "sindrome del tunel carpiano",
+        "stc",
+        "tunel del carpo",
+        "canal carpiano"
+      ],
+      "ids": [
+        "f.flexor.retinaculum",
+        "n.medianus"
+      ],
+      "etiqueta": "síndrome del túnel carpiano"
+    },
+    {
+      "q": [
+        "codo de tenista",
+        "epicondilitis lateral",
+        "epicondilalgia lateral",
+        "tendinopatia extensora del codo"
+      ],
+      "ids": [
+        "m.extensor.carpi.radialis.brevis",
+        "m.extensor.carpi.radialis.longus",
+        "m.extensor.digitorum"
+      ],
+      "etiqueta": "codo de tenista (epicondilalgia lateral)"
+    },
+    {
+      "q": [
+        "codo de golfista",
+        "epicondilitis medial",
+        "epitrocleitis"
+      ],
+      "ids": [
+        "m.pronator.teres",
+        "m.flexor.carpi.radialis",
+        "m.flexor.carpi.ulnaris"
+      ],
+      "etiqueta": "codo de golfista (epicondilalgia medial)"
+    },
+    {
+      "q": [
+        "manguito rotador",
+        "manguito de los rotadores",
+        "rotator cuff"
+      ],
+      "ids": [
+        "m.supraspinatus",
+        "m.infraspinatus",
+        "m.subscapularis",
+        "m.teres.minor"
+      ],
+      "etiqueta": "manguito rotador"
+    },
+    {
+      "q": [
+        "pata de ganso",
+        "pes anserinus",
+        "tendinitis de la pata de ganso"
+      ],
+      "ids": [
+        "m.sartorius",
+        "m.gracilis",
+        "m.semitendinosus"
+      ],
+      "etiqueta": "pata de ganso"
+    },
+    {
+      "q": [
+        "sindrome del piramidal",
+        "sindrome del piriforme",
+        "piriforme"
+      ],
+      "ids": [
+        "m.piriformis",
+        "n.ischiadicus"
+      ],
+      "etiqueta": "síndrome del piriforme"
+    },
+    {
+      "q": [
+        "fascitis plantar",
+        "fasciitis plantar",
+        "espolon calcaneo",
+        "espolon del calcaneo",
+        "talalgia"
+      ],
+      "ids": [
+        "f.plantar.aponeurosis",
+        "b.calcaneus"
+      ],
+      "etiqueta": "fascitis plantar"
+    },
+    {
+      "q": [
+        "isquiotibiales",
+        "isquiosurales",
+        "hamstrings",
+        "isquios"
+      ],
+      "ids": [
+        "m.biceps.femoris.long",
+        "m.semitendinosus",
+        "m.semimembranosus",
+        "m.biceps.femoris.short"
+      ],
+      "etiqueta": "isquiotibiales"
+    },
+    {
+      "q": [
+        "cuadriceps",
+        "cuadriceps femoral",
+        "quadriceps"
+      ],
+      "ids": [
+        "m.rectus.femoris",
+        "m.vastus.lateralis",
+        "m.vastus.medialis",
+        "m.vastus.intermedius"
+      ],
+      "etiqueta": "cuádriceps femoral"
+    },
+    {
+      "q": [
+        "triceps sural",
+        "tendon de aquiles",
+        "tendinopatia aquilea",
+        "aquiles"
+      ],
+      "ids": [
+        "m.gastrocnemius.medial",
+        "m.gastrocnemius.lateral",
+        "m.soleus",
+        "b.calcaneus"
+      ],
+      "etiqueta": "tríceps sural y tendón de Aquiles"
+    },
+    {
+      "q": [
+        "tunel cubital",
+        "sindrome del tunel cubital",
+        "canal de guyon",
+        "mano en garra"
+      ],
+      "ids": [
+        "n.ulnaris"
+      ],
+      "etiqueta": "compresión del nervio cubital"
+    },
+    {
+      "q": [
+        "tunel del tarso",
+        "sindrome del tunel tarsiano"
+      ],
+      "ids": [
+        "n.tibialis"
+      ],
+      "etiqueta": "síndrome del túnel del tarso"
+    },
+    {
+      "q": [
+        "cintilla iliotibial",
+        "sindrome de la cintilla iliotibial",
+        "rodilla del corredor",
+        "banda iliotibial"
+      ],
+      "ids": [
+        "m.tensor.fasciae.latae",
+        "m.gluteus.maximus"
+      ],
+      "etiqueta": "síndrome de la cintilla iliotibial"
+    },
+    {
+      "q": [
+        "atm",
+        "articulacion temporomandibular",
+        "disfuncion temporomandibular",
+        "bruxismo"
+      ],
+      "ids": [
+        "l.temporomandibular.lateral",
+        "m.pterygoid.lateral",
+        "m.masseter",
+        "m.temporalis"
+      ],
+      "etiqueta": "articulación temporomandibular"
+    },
+    {
+      "q": [
+        "mano pendula",
+        "mano caida",
+        "paralisis radial"
+      ],
+      "ids": [
+        "n.radialis",
+        "m.extensor.digitorum"
+      ],
+      "etiqueta": "parálisis del nervio radial"
+    },
+    {
+      "q": [
+        "pie caido",
+        "pie equino",
+        "steppage",
+        "marcha en steppage"
+      ],
+      "ids": [
+        "n.fibularis.profundus",
+        "n.fibularis.communis",
+        "m.tibialis.anterior"
+      ],
+      "etiqueta": "pie caído por lesión del fibular"
+    },
+    {
+      "q": [
+        "ciatica",
+        "ciatalgia",
+        "lumbociatalgia",
+        "dolor ciatico"
+      ],
+      "ids": [
+        "n.ischiadicus",
+        "m.piriformis"
+      ],
+      "etiqueta": "ciática"
+    },
+    {
+      "q": [
+        "meralgia parestesica",
+        "meralgia"
+      ],
+      "ids": [
+        "n.cutaneus.femoris.lateralis"
+      ],
+      "etiqueta": "meralgia parestésica"
+    },
+    {
+      "q": [
+        "escapula alada",
+        "escapula alata",
+        "winging"
+      ],
+      "ids": [
+        "m.serratus.anterior",
+        "n.long.thoracic"
+      ],
+      "etiqueta": "escápula alada"
+    },
+    {
+      "q": [
+        "signo de popeye",
+        "rotura del biceps",
+        "popeye"
+      ],
+      "ids": [
+        "m.biceps.brachii.long"
+      ],
+      "etiqueta": "signo de Popeye"
+    },
+    {
+      "q": [
+        "paralisis facial",
+        "paralisis de bell",
+        "bell"
+      ],
+      "ids": [
+        "n.facial"
+      ],
+      "etiqueta": "parálisis facial periférica"
+    },
+    {
+      "q": [
+        "neuralgia del trigemino",
+        "trigemino"
+      ],
+      "ids": [
+        "n.trigeminal"
+      ],
+      "etiqueta": "nervio trigémino"
+    },
+    {
+      "q": [
+        "torticolis",
+        "torticolis congenita"
+      ],
+      "ids": [
+        "m.sternocleidomastoid",
+        "m.trapezius.superior",
+        "m.levator.scapulae"
+      ],
+      "etiqueta": "tortícolis"
+    },
+    {
+      "q": [
+        "psoas iliaco",
+        "iliopsoas",
+        "psoas"
+      ],
+      "ids": [
+        "m.psoas.major",
+        "m.iliacus"
+      ],
+      "etiqueta": "iliopsoas"
+    },
+    {
+      "q": [
+        "trendelenburg",
+        "signo de trendelenburg",
+        "marcha de trendelenburg"
+      ],
+      "ids": [
+        "m.gluteus.medius",
+        "n.gluteus.superior"
+      ],
+      "etiqueta": "signo de Trendelenburg"
+    },
+    {
+      "q": [
+        "pinzamiento subacromial",
+        "sindrome subacromial",
+        "impingement"
+      ],
+      "ids": [
+        "m.supraspinatus",
+        "m.deltoideus.medio",
+        "m.infraspinatus"
+      ],
+      "etiqueta": "pinzamiento subacromial"
+    },
+    {
+      "q": [
+        "tenosinovitis de quervain",
+        "quervain",
+        "de quervain"
+      ],
+      "ids": [
+        "m.abductor.pollicis.longus",
+        "m.extensor.pollicis.brevis"
+      ],
+      "etiqueta": "tenosinovitis de De Quervain"
+    },
+    {
+      "q": [
+        "pubalgia",
+        "pubalgia atletica",
+        "osteitis del pubis",
+        "osteopatia dinamica de pubis",
+        "hernia del deportista",
+        "dolor inguinal del deportista"
+      ],
+      "ids": [
+        "l.symphysis.pubis",
+        "m.adductor.longus",
+        "b.pubis",
+        "m.adductor.magnus"
+      ],
+      "etiqueta": "pubalgia del deportista"
+    },
+    {
+      "q": [
+        "trocanteritis",
+        "bursitis trocanterea",
+        "sindrome del trocanter mayor",
+        "dolor trocantereo",
+        "tendinopatia glutea",
+        "dolor lateral de cadera"
+      ],
+      "ids": [
+        "m.gluteus.medius",
+        "m.gluteus.minimus",
+        "m.tensor.fasciae.latae"
+      ],
+      "etiqueta": "síndrome de dolor trocantéreo mayor"
+    },
+    {
+      "q": [
+        "sindrome gluteo profundo",
+        "gluteo profundo",
+        "espacio subgluteo",
+        "atrapamiento del ciatico en la nalga"
+      ],
+      "ids": [
+        "m.obturator.internus",
+        "n.ischiadicus",
+        "m.piriformis"
+      ],
+      "etiqueta": "síndrome glúteo profundo"
+    },
+    {
+      "q": [
+        "cadera en resorte",
+        "coxa saltans",
+        "chasquido de cadera",
+        "resalte de cadera"
+      ],
+      "ids": [
+        "m.iliacus",
+        "m.psoas.major",
+        "m.tensor.fasciae.latae"
+      ],
+      "etiqueta": "cadera en resorte (coxa saltans)"
+    },
+    {
+      "q": [
+        "pinzamiento isquiofemoral",
+        "sindrome isquiofemoral",
+        "isquiofemoral"
+      ],
+      "ids": [
+        "m.quadratus.femoris",
+        "b.ischium"
+      ],
+      "etiqueta": "pinzamiento isquiofemoral"
+    },
+    {
+      "q": [
+        "condromalacia",
+        "condromalacia rotuliana",
+        "dolor femoropatelar",
+        "sindrome femoropatelar",
+        "dolor anterior de rodilla"
+      ],
+      "ids": [
+        "b.patella",
+        "m.vastus.medialis",
+        "m.vastus.lateralis",
+        "m.gluteus.medius"
+      ],
+      "etiqueta": "síndrome de dolor femoropatelar"
+    },
+    {
+      "q": [
+        "rodilla del saltador",
+        "tendinopatia rotuliana",
+        "tendinitis rotuliana",
+        "jumpers knee"
+      ],
+      "ids": [
+        "b.patella",
+        "m.rectus.femoris"
+      ],
+      "etiqueta": "rodilla del saltador (tendinopatía rotuliana)"
+    },
+    {
+      "q": [
+        "lca",
+        "ligamento cruzado anterior",
+        "rotura del lca",
+        "lachman",
+        "test de lachman",
+        "cajon anterior de rodilla",
+        "triada infeliz"
+      ],
+      "ids": [
+        "l.cruciate.anterior",
+        "l.meniscus.medial",
+        "l.collateral.tibial"
+      ],
+      "etiqueta": "rotura del ligamento cruzado anterior"
+    },
+    {
+      "q": [
+        "lesion meniscal",
+        "rotura meniscal",
+        "rotura de menisco",
+        "asa de cubo",
+        "mcmurray",
+        "test de mcmurray"
+      ],
+      "ids": [
+        "l.meniscus.medial",
+        "l.meniscus.lateral"
+      ],
+      "etiqueta": "lesión meniscal"
+    },
+    {
+      "q": [
+        "esguince de rodilla",
+        "ligamento lateral interno",
+        "lcm",
+        "valgo forzado"
+      ],
+      "ids": [
+        "l.collateral.tibial"
+      ],
+      "etiqueta": "esguince del ligamento colateral medial"
+    },
+    {
+      "q": [
+        "baker",
+        "quiste de baker",
+        "quiste popliteo"
+      ],
+      "ids": [
+        "m.semimembranosus",
+        "m.gastrocnemius.medial"
+      ],
+      "etiqueta": "quiste de Baker"
+    },
+    {
+      "q": [
+        "osgood",
+        "schlatter",
+        "osgood schlatter",
+        "enfermedad de osgood schlatter",
+        "apofisitis tibial"
+      ],
+      "ids": [
+        "b.tibia",
+        "m.rectus.femoris"
+      ],
+      "etiqueta": "enfermedad de Osgood-Schlatter"
+    },
+    {
+      "q": [
+        "periostitis",
+        "periostitis tibial",
+        "shin splints",
+        "sindrome de estres tibial medial",
+        "dolor en la espinilla"
+      ],
+      "ids": [
+        "b.tibia",
+        "m.soleus",
+        "m.tibialis.posterior"
+      ],
+      "etiqueta": "periostitis tibial (estrés tibial medial)"
+    },
+    {
+      "q": [
+        "compartimental",
+        "sindrome compartimental",
+        "compartimento anterior de la pierna"
+      ],
+      "ids": [
+        "m.tibialis.anterior",
+        "n.fibularis.profundus",
+        "m.extensor.digitorum.longus"
+      ],
+      "etiqueta": "síndrome compartimental anterior"
+    },
+    {
+      "q": [
+        "esguince de tobillo",
+        "esguince lateral de tobillo",
+        "lpaa",
+        "inversion forzada",
+        "cajon anterior de tobillo",
+        "inestabilidad cronica de tobillo"
+      ],
+      "ids": [
+        "l.talofibular.anterior",
+        "l.calcaneofibular",
+        "l.talofibular.posterior"
+      ],
+      "etiqueta": "esguince lateral de tobillo"
+    },
+    {
+      "q": [
+        "pie plano",
+        "pie plano adquirido",
+        "disfuncion del tibial posterior",
+        "arco caido",
+        "signo de los demasiados dedos"
+      ],
+      "ids": [
+        "m.tibialis.posterior",
+        "b.navicular",
+        "m.abductor.hallucis"
+      ],
+      "etiqueta": "pie plano adquirido del adulto"
+    },
+    {
+      "q": [
+        "juanete",
+        "hallux valgus",
+        "desviacion del primer dedo"
+      ],
+      "ids": [
+        "m.abductor.hallucis",
+        "b.metatarsal.1",
+        "b.phalanx.proximal.1.foot",
+        "b.sesamoid.hallux"
+      ],
+      "etiqueta": "hallux valgus (juanete)"
+    },
+    {
+      "q": [
+        "sever",
+        "enfermedad de sever",
+        "apofisitis calcanea",
+        "talalgia del adolescente"
+      ],
+      "ids": [
+        "b.calcaneus"
+      ],
+      "etiqueta": "enfermedad de Sever"
+    },
+    {
+      "q": [
+        "lumbalgia",
+        "lumbago",
+        "dolor lumbar",
+        "dolor de espalda baja",
+        "lumbalgia inespecifica"
+      ],
+      "ids": [
+        "m.quadratus.lumborum",
+        "m.multifidus.lumborum",
+        "f.thoracolumbar.fascia",
+        "m.transversus.abdominis",
+        "m.psoas.major"
+      ],
+      "etiqueta": "lumbalgia inespecífica"
+    },
+    {
+      "q": [
+        "hernia discal",
+        "hernia de disco",
+        "hernia discal lumbar",
+        "protrusion discal"
+      ],
+      "ids": [
+        "b.l5",
+        "b.l4",
+        "n.ischiadicus"
+      ],
+      "etiqueta": "hernia discal lumbar"
+    },
+    {
+      "q": [
+        "espondilolistesis",
+        "listesis",
+        "espondilolisis"
+      ],
+      "ids": [
+        "b.l5",
+        "b.sacrum"
+      ],
+      "etiqueta": "espondilolistesis L5-S1"
+    },
+    {
+      "q": [
+        "sacroiliaca",
+        "dolor sacroiliaco",
+        "disfuncion sacroiliaca",
+        "articulacion sacroiliaca"
+      ],
+      "ids": [
+        "b.sacrum",
+        "b.ilium",
+        "b.hip"
+      ],
+      "etiqueta": "dolor sacroilíaco"
+    },
+    {
+      "q": [
+        "hiperlordosis",
+        "sindrome cruzado inferior",
+        "cruzado inferior",
+        "anteversion pelvica",
+        "basculacion anterior de la pelvis"
+      ],
+      "ids": [
+        "m.iliacus",
+        "m.psoas.major",
+        "m.rectus.femoris",
+        "m.gluteus.maximus"
+      ],
+      "etiqueta": "síndrome cruzado inferior (Janda)"
+    },
+    {
+      "q": [
+        "sindrome cruzado superior",
+        "cruzado superior",
+        "cabeza adelantada",
+        "postura de cabeza adelantada",
+        "hombros adelantados",
+        "cifosis postural"
+      ],
+      "ids": [
+        "m.trapezius.superior",
+        "m.levator.scapulae",
+        "m.pectoralis.minor",
+        "m.longus.colli"
+      ],
+      "etiqueta": "síndrome cruzado superior (Janda)"
+    },
+    {
+      "q": [
+        "diastasis",
+        "diastasis de rectos",
+        "diastasis abdominal",
+        "separacion de los rectos"
+      ],
+      "ids": [
+        "f.linea.alba",
+        "m.rectus.abdominis",
+        "m.transversus.abdominis"
+      ],
+      "etiqueta": "diástasis de rectos abdominales"
+    },
+    {
+      "q": [
+        "core",
+        "faja abdominal",
+        "musculatura del core",
+        "estabilidad lumbopelvica",
+        "cilindro del core"
+      ],
+      "ids": [
+        "m.transversus.abdominis",
+        "m.multifidus.lumborum",
+        "m.diaphragm",
+        "m.quadratus.lumborum",
+        "f.thoracolumbar.fascia"
+      ],
+      "etiqueta": "estabilidad lumbopélvica (core)"
+    },
+    {
+      "q": [
+        "musculos de la respiracion",
+        "respiracion diafragmatica",
+        "patron respiratorio",
+        "musculos accesorios de la respiracion",
+        "respiracion costal alta",
+        "espiracion forzada",
+        "musculos espiratorios",
+        "musculos inspiratorios",
+        "musculos de la inspiracion"
+      ],
+      "ids": [
+        "m.diaphragm",
+        "m.intercostales.externi",
+        "m.scalenus.anterior",
+        "m.sternocleidomastoid",
+        "m.intercostales.interni",
+        "m.intercostales.intimi",
+        "m.serratus.posterior.superior",
+        "m.transversus.thoracis"
+      ],
+      "etiqueta": "músculos de la respiración"
+    },
+    {
+      "q": [
+        "desfiladero",
+        "desfiladero toracico",
+        "sindrome del desfiladero toracico",
+        "salida toracica",
+        "sindrome de la salida toracica",
+        "sindrome del escaleno",
+        "costilla cervical"
+      ],
+      "ids": [
+        "m.scalenus.anterior",
+        "m.scalenus.medius",
+        "m.pectoralis.minor",
+        "b.rib.1"
+      ],
+      "etiqueta": "síndrome del desfiladero torácico"
+    },
+    {
+      "q": [
+        "latigazo",
+        "latigazo cervical",
+        "whiplash",
+        "esguince cervical",
+        "sindrome del latigazo"
+      ],
+      "ids": [
+        "m.sternocleidomastoid",
+        "m.longus.colli",
+        "m.semispinalis.colli",
+        "m.multifidus.colli",
+        "m.splenius.capitis",
+        "m.rectus.capitis.posterior.minor",
+        "m.rectus.capitis.posterior.major"
+      ],
+      "etiqueta": "latigazo cervical (whiplash)"
+    },
+    {
+      "q": [
+        "cervicogenica",
+        "cefalea cervicogenica",
+        "cefalea de origen cervical",
+        "dolor de cabeza de origen cervical",
+        "cefalea cervicogena",
+        "puente miodural"
+      ],
+      "ids": [
+        "m.obliquus.capitis.inferior",
+        "m.rectus.capitis.posterior.major",
+        "m.rectus.capitis.posterior.minor",
+        "m.obliquus.capitis.superior",
+        "m.splenius.capitis",
+        "m.semispinalis.colli",
+        "b.occipital",
+        "m.sternocleidomastoid",
+        "m.longus.capitis"
+      ],
+      "etiqueta": "cefalea cervicogénica"
+    },
+    {
+      "q": [
+        "arnold",
+        "neuralgia de arnold",
+        "neuralgia occipital",
+        "nervio occipital mayor"
+      ],
+      "ids": [
+        "m.obliquus.capitis.inferior",
+        "b.occipital",
+        "m.semispinalis.colli",
+        "m.rectus.capitis.posterior.major",
+        "m.splenius.capitis"
+      ],
+      "etiqueta": "neuralgia de Arnold (occipital)"
+    },
+    {
+      "q": [
+        "cefalea tensional",
+        "cefalea de tension",
+        "dolor de cabeza tensional"
+      ],
+      "ids": [
+        "m.trapezius.superior",
+        "m.temporalis",
+        "m.splenius.capitis"
+      ],
+      "etiqueta": "cefalea de tipo tensional"
+    },
+    {
+      "q": [
+        "desplazamiento discal",
+        "chasquido mandibular",
+        "click mandibular",
+        "bloqueo mandibular",
+        "disco de la atm"
+      ],
+      "ids": [
+        "l.disc.tmj",
+        "m.pterygoid.lateral",
+        "l.temporomandibular.lateral"
+      ],
+      "etiqueta": "desplazamiento del disco de la ATM"
+    },
+    {
+      "q": [
+        "cervicobraquialgia",
+        "radiculopatia cervical",
+        "braquialgia",
+        "hernia cervical",
+        "dolor irradiado al brazo"
+      ],
+      "ids": [
+        "b.c6",
+        "b.c7",
+        "b.c5"
+      ],
+      "etiqueta": "radiculopatía cervical"
+    },
+    {
+      "q": [
+        "erector espinal",
+        "erectores espinales",
+        "masa comun",
+        "paravertebrales",
+        "musculatura paravertebral",
+        "paraespinales"
+      ],
+      "ids": [
+        "m.longissimus.thoracis",
+        "m.iliocostalis.lumborum",
+        "m.spinalis.thoracis",
+        "m.iliocostalis.thoracis"
+      ],
+      "etiqueta": "erector espinal"
+    },
+    {
+      "q": [
+        "suelo pelvico",
+        "diafragma pelvico",
+        "musculatura del suelo pelvico",
+        "incontinencia"
+      ],
+      "ids": [
+        "m.levator.ani",
+        "m.coccygeus",
+        "m.sphincter.ani.externus",
+        "f.arcus.tendineus.levator.ani"
+      ],
+      "etiqueta": "suelo pélvico (diafragma pélvico)"
+    },
+    {
+      "q": [
+        "coccigodinia",
+        "dolor coccigeo"
+      ],
+      "ids": [
+        "b.coccyx",
+        "m.coccygeus",
+        "m.levator.ani"
+      ],
+      "etiqueta": "coccigodinia"
+    },
+    {
+      "q": [
+        "multifido",
+        "multifidos",
+        "multifidus",
+        "transversoespinoso",
+        "transversoespinosos",
+        "musculatura profunda del tronco",
+        "musculatura paravertebral profunda",
+        "estabilizadores segmentarios",
+        "intertransversos",
+        "intertransversarios"
+      ],
+      "ids": [
+        "m.multifidus.lumborum",
+        "m.multifidus.colli",
+        "m.multifidus.thoracis",
+        "m.rotatores",
+        "m.semispinalis.thoracis",
+        "m.interspinales",
+        "m.intertransversarii.laterales.lumborum"
+      ],
+      "etiqueta": "multífidos y grupo transversoespinoso"
+    },
+    {
+      "q": [
+        "incontinencia fecal",
+        "incontinencia anal",
+        "continencia fecal",
+        "esfinter anal",
+        "esfinter anal externo",
+        "desgarro perineal",
+        "lesion obstetrica del esfinter anal"
+      ],
+      "ids": [
+        "m.sphincter.ani.externus",
+        "m.levator.ani",
+        "m.coccygeus"
+      ],
+      "etiqueta": "incontinencia fecal"
+    },
+    {
+      "q": [
+        "extensores cervicales profundos",
+        "extensores profundos del cuello",
+        "musculatura cervical profunda",
+        "flexo-extension cervical profunda"
+      ],
+      "ids": [
+        "m.obliquus.capitis.inferior",
+        "m.rectus.capitis.posterior.major",
+        "m.rectus.capitis.posterior.minor",
+        "m.obliquus.capitis.superior",
+        "m.multifidus.colli",
+        "m.semispinalis.colli",
+        "m.splenius.colli",
+        "m.splenius.capitis"
+      ],
+      "etiqueta": "extensores cervicales profundos"
+    },
+    {
+      "q": [
+        "suboccipitales",
+        "musculos suboccipitales",
+        "triangulo suboccipital",
+        "recto posterior mayor",
+        "recto posterior menor",
+        "oblicuo inferior de la cabeza",
+        "oblicuo superior de la cabeza",
+        "propiocepcion cervical alta"
+      ],
+      "ids": [
+        "m.obliquus.capitis.inferior",
+        "m.rectus.capitis.posterior.major",
+        "m.rectus.capitis.posterior.minor",
+        "m.obliquus.capitis.superior"
+      ],
+      "etiqueta": "músculos suboccipitales (triángulo suboccipital)"
+    },
+    {
+      "q": [
+        "flexores cervicales profundos",
+        "flexores profundos del cuello",
+        "ccft",
+        "test de flexion craneocervical",
+        "flexion craneocervical",
+        "recto anterior de la cabeza",
+        "recto lateral de la cabeza",
+        "prevertebrales",
+        "musculatura prevertebral"
+      ],
+      "ids": [
+        "m.longus.colli",
+        "m.longus.capitis",
+        "m.rectus.capitis.anterior",
+        "m.rectus.capitis.lateralis",
+        "m.sternocleidomastoid",
+        "m.scalenus.anterior"
+      ],
+      "etiqueta": "flexores cervicales profundos (test de flexión cráneo-cervical)"
+    },
+    {
+      "q": [
+        "intercostales",
+        "musculos intercostales",
+        "espacio intercostal",
+        "neuralgia intercostal",
+        "dolor intercostal",
+        "bloqueo intercostal",
+        "pared toracica",
+        "dolor de pared toracica"
+      ],
+      "ids": [
+        "m.intercostales.externi",
+        "m.intercostales.interni",
+        "m.intercostales.intimi",
+        "m.transversus.thoracis",
+        "m.levatores.costarum"
+      ],
+      "etiqueta": "músculos intercostales y pared torácica"
+    },
+    {
+      "q": [
+        "fractura de jones",
+        "jones",
+        "fractura del quinto metatarsiano",
+        "base del quinto metatarsiano",
+        "fractura del bailarin",
+        "pseudo jones"
+      ],
+      "ids": [
+        "b.metatarsal.5",
+        "m.fibularis.brevis",
+        "l.calcaneofibular"
+      ],
+      "etiqueta": "fractura de la base del 5.º metatarsiano (Jones)"
+    },
+    {
+      "q": [
+        "lisfranc",
+        "lesion de lisfranc",
+        "articulacion de lisfranc",
+        "luxacion tarsometatarsiana",
+        "esguince de mediopie"
+      ],
+      "ids": [
+        "b.metatarsal.2",
+        "b.cuneiform.medial",
+        "b.metatarsal.3",
+        "b.cuboid"
+      ],
+      "etiqueta": "lesión de Lisfranc (tarsometatarsiana)"
+    },
+    {
+      "q": [
+        "metatarsalgia",
+        "dolor en el antepie",
+        "dolor de antepie",
+        "dolor en la almohadilla del antepie"
+      ],
+      "ids": [
+        "b.metatarsal.2",
+        "b.metatarsal.3",
+        "b.metatarsal.1",
+        "b.metatarsal.4"
+      ],
+      "etiqueta": "metatarsalgia"
+    },
+    {
+      "q": [
+        "neuroma de morton",
+        "morton",
+        "neuroma interdigital",
+        "metatarsalgia de morton"
+      ],
+      "ids": [
+        "b.metatarsal.3",
+        "b.metatarsal.4",
+        "n.plantaris.lateralis",
+        "n.plantaris.medialis"
+      ],
+      "etiqueta": "neuroma de Morton"
+    },
+    {
+      "q": [
+        "fractura de estres de metatarsiano",
+        "fractura de la marcha",
+        "fractura por estres del pie"
+      ],
+      "ids": [
+        "b.metatarsal.2",
+        "b.metatarsal.3",
+        "b.metatarsal.4",
+        "b.metatarsal.5"
+      ],
+      "etiqueta": "fractura de estrés de metatarsiano (fractura de la marcha)"
+    },
+    {
+      "q": [
+        "hallux rigidus",
+        "dedo gordo rigido",
+        "artrosis de la primera metatarsofalangica",
+        "rigidez del dedo gordo"
+      ],
+      "ids": [
+        "b.metatarsal.1",
+        "b.phalanx.proximal.1.foot"
+      ],
+      "etiqueta": "hallux rigidus"
+    },
+    {
+      "q": [
+        "turf toe",
+        "esguince del dedo gordo",
+        "placa plantar del dedo gordo",
+        "hiperextension del dedo gordo"
+      ],
+      "ids": [
+        "b.phalanx.proximal.1.foot",
+        "b.metatarsal.1",
+        "m.flexor.hallucis.longus",
+        "b.sesamoid.hallux"
+      ],
+      "etiqueta": "turf toe (esguince de la 1.ª metatarsofalángica)"
+    },
+    {
+      "q": [
+        "sesamoideos",
+        "sesamoiditis",
+        "sesamoideos del dedo gordo",
+        "dolor sesamoideo"
+      ],
+      "ids": [
+        "b.sesamoid.hallux",
+        "b.metatarsal.1",
+        "b.phalanx.proximal.1.foot",
+        "m.flexor.hallucis.longus"
+      ],
+      "etiqueta": "sesamoideos del hallux"
+    },
+    {
+      "q": [
+        "freiberg",
+        "enfermedad de freiberg",
+        "infraccion de freiberg",
+        "necrosis de la cabeza metatarsiana"
+      ],
+      "ids": [
+        "b.metatarsal.2",
+        "b.metatarsal.3"
+      ],
+      "etiqueta": "enfermedad de Freiberg"
+    },
+    {
+      "q": [
+        "kohler",
+        "enfermedad de kohler",
+        "necrosis del escafoides tarsiano"
+      ],
+      "ids": [
+        "b.navicular",
+        "m.tibialis.posterior"
+      ],
+      "etiqueta": "enfermedad de Köhler"
+    },
+    {
+      "q": [
+        "dedo en martillo",
+        "dedo en garra",
+        "dedo en mazo",
+        "hammer toe",
+        "claw toe",
+        "mallet toe",
+        "dedos en garra"
+      ],
+      "ids": [
+        "b.phalanx.middle.2.foot",
+        "b.phalanx.proximal.2.foot",
+        "b.phalanx.middle.3.foot",
+        "b.phalanx.proximal.3.foot",
+        "b.phalanx.distal.2.foot"
+      ],
+      "etiqueta": "dedos en martillo, garra y mazo"
+    },
+    {
+      "q": [
+        "juanete de sastre",
+        "bunionette",
+        "quinto dedo supraaducto",
+        "dedo en rizo"
+      ],
+      "ids": [
+        "b.metatarsal.5",
+        "b.phalanx.proximal.5.foot"
+      ],
+      "etiqueta": "juanete de sastre y deformidades del 5.º dedo"
+    },
+    {
+      "q": [
+        "deglucion",
+        "disfagia",
+        "disfagia orofaringea",
+        "ejercicio de shaker",
+        "shaker",
+        "chin tuck against resistance",
+        "ctar",
+        "esfinter esofagico superior",
+        "musculos suprahioideos",
+        "suprahioideos",
+        "elevacion laringea",
+        "maniobra de mendelsohn",
+        "mendelsohn",
+        "elevacion hiolaringea",
+        "laringe elevada"
+      ],
+      "ids": [
+        "m.thyrohyoid",
+        "m.geniohyoid",
+        "m.mylohyoid",
+        "m.digastric",
+        "b.hyoid",
+        "m.stylohyoid",
+        "m.sternohyoid",
+        "b.thyroid.cartilage",
+        "b.cricoid.cartilage"
+      ],
+      "etiqueta": "deglución y disfagia orofaríngea (musculatura suprahioidea)"
+    },
+    {
+      "q": [
+        "musculos infrahioideos",
+        "infrahioideos",
+        "musculos cintilla",
+        "strap muscles",
+        "descenso del hioides",
+        "sindrome del omohioideo",
+        "cuello anterior"
+      ],
+      "ids": [
+        "m.sternohyoid",
+        "m.omohyoid",
+        "m.sternothyroid",
+        "m.thyrohyoid",
+        "b.hyoid"
+      ],
+      "etiqueta": "musculatura infrahioidea (músculos cintilla)"
+    },
+    {
+      "q": [
+        "costilla deslizante",
+        "sindrome de la costilla deslizante",
+        "slipping rib",
+        "maniobra del gancho",
+        "hooking maneuver",
+        "costillas falsas",
+        "reborde costal"
+      ],
+      "ids": [
+        "b.costal.cartilage.8.10",
+        "b.costal.cartilage.7",
+        "b.rib.10",
+        "b.rib.9",
+        "b.rib.8"
+      ],
+      "etiqueta": "síndrome de la costilla deslizante"
+    },
+    {
+      "q": [
+        "costocondritis",
+        "sindrome de tietze",
+        "tietze",
+        "dolor costocondral",
+        "union costocondral",
+        "cartilago costal",
+        "cartilagos costales"
+      ],
+      "ids": [
+        "b.costal.cartilage.3.6",
+        "b.costal.cartilage.2",
+        "b.costal.cartilage.7",
+        "b.costal.cartilage.1",
+        "b.costal.cartilage.8.10"
+      ],
+      "etiqueta": "costocondritis y síndrome de Tietze (cartílagos costales)"
+    },
+    {
+      "q": [
+        "laringe",
+        "cartilagos laringeos",
+        "cartilago tiroides",
+        "nuez",
+        "nuez de adan",
+        "manzana de adan",
+        "prominencia laringea",
+        "cricoides",
+        "cartilago cricoides",
+        "aritenoides",
+        "cartilago aritenoides",
+        "corniculado",
+        "cartilagos de santorini",
+        "cuerdas vocales",
+        "glotis",
+        "musculos de la laringe",
+        "musculos intrinsecos de la laringe",
+        "cricotiroideo",
+        "cricoaritenoideo",
+        "tiroaritenoideo",
+        "aritenoideo",
+        "vocalis"
+      ],
+      "ids": [
+        "b.thyroid.cartilage",
+        "b.cricoid.cartilage",
+        "b.arytenoid.cartilage",
+        "b.corniculate.cartilage",
+        "m.thyrohyoid",
+        "m.sternothyroid",
+        "b.hyoid",
+        "m.cricothyroid",
+        "m.cricoarytenoideus.posterior",
+        "m.cricoarytenoideus.lateralis",
+        "m.thyroarytenoideus",
+        "m.arytenoideus.transversus",
+        "m.arytenoideus.obliquus"
+      ],
+      "etiqueta": "laringe y sus cartílagos"
+    },
+    {
+      "q": [
+        "disfonia",
+        "disfonia por tension muscular",
+        "dtm",
+        "tension laringea",
+        "terapia manual laringea",
+        "masaje circumlaringeo",
+        "masaje laringeo",
+        "voz",
+        "ronquera",
+        "fatiga vocal"
+      ],
+      "ids": [
+        "b.thyroid.cartilage",
+        "b.hyoid",
+        "b.arytenoid.cartilage",
+        "m.thyrohyoid",
+        "m.sternothyroid",
+        "m.sternohyoid",
+        "m.omohyoid",
+        "m.sternocleidomastoid",
+        "m.cricothyroid",
+        "m.thyroarytenoideus"
+      ],
+      "etiqueta": "disfonía por tensión muscular (terapia manual laríngea)"
+    },
+    {
+      "q": [
+        "tuberculo carotideo",
+        "tuberculo de chassaignac",
+        "chassaignac",
+        "nivel c6",
+        "membrana cricotiroidea",
+        "cricotirotomia",
+        "presion cricoidea",
+        "maniobra de sellick"
+      ],
+      "ids": [
+        "b.cricoid.cartilage",
+        "b.c6",
+        "b.thyroid.cartilage"
+      ],
+      "etiqueta": "referencias de superficie del cuello anterior (C6, cricoides)"
+    },
+    {
+      "q": [
+        "paralisis de cuerda vocal",
+        "paralisis de cuerdas vocales",
+        "paralisis del laringeo recurrente",
+        "nervio laringeo recurrente",
+        "laringeo recurrente",
+        "estridor",
+        "ronquera tras tiroidectomia",
+        "insuficiencia glotica",
+        "cierre glotico",
+        "deglucion supraglotica",
+        "supraglotica"
+      ],
+      "ids": [
+        "m.cricoarytenoideus.posterior",
+        "m.cricoarytenoideus.lateralis",
+        "m.thyroarytenoideus",
+        "m.arytenoideus.transversus",
+        "b.arytenoid.cartilage",
+        "m.cricothyroid"
+      ],
+      "etiqueta": "parálisis de cuerda vocal y cierre glótico"
+    }
+  ]
+}

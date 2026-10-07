@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es" class="sl-theme-dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>Fisio Atlas · Atlas anatómico interactivo</title>
+    <meta name="description" content="Atlas anatómico en 3D para estudiar fisioterapia: músculos, huesos, ligamentos y nervios con su ficha." />
+
+    <!-- App instalable (PWA): manifiesto, iconos y metas de iOS. El color es
+         --bg-0 de styles/app.css. La barra de estado de iOS va en "black" y no
+         en "black-translucent": la cabecera no reserva el área segura y
+         quedaría debajo de la hora y la batería. -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#100c09" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Fisio Atlas" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+
+    <!-- El importmap va ANTES de cualquier <script type="module">: Safari
+         ignora un importmap que llega después, y sin él no resuelve "three".
+         Todo lo de terceros vive en vendor/ con versión exacta
+         (tools/build_vendor.mjs): ninguna petición a un CDN, y el service
+         worker puede guardarlo para usar la app sin conexión. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/",
+          "motion": "./vendor/motion.mjs",
+          "@floating-ui/dom": "./vendor/floating-ui-dom.mjs",
+          "fuse.js": "./vendor/fuse/fuse.min.mjs",
+          "three-mesh-bvh": "./vendor/three-mesh-bvh/index.module.js"
+        }
+      }
+    </script>
+
+    <!-- Fuentes locales: Fraunces, Instrument Sans e IBM Plex Mono (OFL) -->
+    <link rel="stylesheet" href="vendor/fonts/fonts.css" />
+    <!-- Open Props: escalas de easing, sombra y forma (solo custom properties) -->
+    <link rel="stylesheet" href="vendor/open-props/open-props.min.css" />
+    <!-- Shoelace: tema oscuro + los componentes que usa la app, ya registrados
+         (sin autoloader: ver tools/build_vendor.mjs) -->
+    <link rel="stylesheet" href="vendor/shoelace/themes/dark.css" />
+    <script type="module" src="vendor/shoelace/shoelace.mjs"></script>
+
+    <!-- Hoja única del proyecto: sustituye a main/editorial/interactions/glass-layout -->
+    <link rel="stylesheet" href="styles/app.css" />
+
+    <!-- Service worker (uso sin conexión); nunca bloquea ni rompe el arranque -->
+    <script type="module" src="src/pwa.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#region-list">Saltar a la lista de estructuras</a>
+
+    <header class="app-header">
+      <div class="header__side">
+        <button type="button" class="header__toggle" id="btn-menu" aria-controls="drawer-nav" aria-expanded="false" aria-label="Abrir el menú: capas, regiones, examen y ayuda">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        </button>
+        <div class="brand">
+          <span class="brand__mark">FA</span>
+          <div class="brand__text">
+            <h1>Fisio Atlas</h1>
+            <p>Cuerpo completo · <span data-version>v1.0</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="search">
+        <input
+          id="search-input"
+          type="search"
+          placeholder="Buscar músculo, acción, nervio, patología…"
+          autocomplete="off"
+          spellcheck="false"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="search-results"
+          aria-autocomplete="list"
+        />
+        <kbd class="search__hint" aria-hidden="true">/</kbd>
+        <ul id="search-results" class="search__results" role="listbox" aria-label="Resultados" hidden></ul>
+        <p id="search-live" class="sr-only" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="header__side">
+        <nav class="breadcrumb" id="breadcrumb" aria-label="Ubicación">
+          <span>Atlas anatómico</span>
+        </nav>
+        <!-- Ayuda y créditos: abren diálogos (src/ui/guia.js y acerca.js). En el
+             teléfono no caben los dos con el buscador: «Acerca de» se queda en
+             el menú y al pie de la guía. -->
+        <button type="button" class="header__btn header__btn--guia" id="btn-guia" data-abrir="guia" aria-haspopup="dialog" aria-label="Cómo se usa">
+          <span aria-hidden="true">?</span>
+        </button>
+        <button type="button" class="header__btn header__btn--acerca" id="btn-acerca" data-abrir="acerca" aria-haspopup="dialog" aria-label="Acerca de y créditos">
+          <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".7" fill="currentColor"/></svg>
+        </button>
+        <button type="button" class="header__toggle" id="btn-ficha" aria-controls="drawer-info" aria-expanded="false" aria-label="Abrir ficha anatómica">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-body">
+      <aside class="sidebar" id="sidebar" aria-label="Capas y regiones">
+        <section class="sidebar__block">
+          <h2>Capas</h2>
+          <ul id="layer-list" class="layer-list" role="list"></ul>
+        </section>
+        <section class="sidebar__block">
+          <h2>Regiones</h2>
+          <div id="region-list" class="region-list"></div>
+        </section>
+        <section class="sidebar__block">
+          <button type="button" id="btn-quiz" class="quiz-start" aria-pressed="false">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".6" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg>
+            <span>Modo examen</span>
+          </button>
+        </section>
+        <section class="sidebar__block" id="fav-block" hidden>
+          <h2>Favoritos</h2>
+          <ul id="fav-list" class="recent-list" role="list"></ul>
+        </section>
+        <section class="sidebar__block" id="recent-block" hidden>
+          <h2>
+            Vistas recientemente
+            <button type="button" id="recent-clear" class="sidebar__action" title="Vaciar la lista">Vaciar</button>
+          </h2>
+          <ul id="recent-list" class="recent-list" role="list"></ul>
+        </section>
+        <section class="sidebar__block sidebar__ayuda" aria-labelledby="ayuda-titulo">
+          <h2 id="ayuda-titulo">Ayuda y datos</h2>
+          <ul class="ayuda-list" role="list">
+            <li><button type="button" data-abrir="guia" aria-haspopup="dialog">Cómo se usa</button></li>
+            <li><button type="button" data-abrir="datos" aria-haspopup="dialog">Mis datos: exportar o importar</button></li>
+            <li><button type="button" data-abrir="acerca" aria-haspopup="dialog">Acerca de y créditos</button></li>
+          </ul>
+        </section>
+        <section class="sidebar__block sidebar__block--bottom">
+          <h2>Leyenda</h2>
+          <ul class="legend" role="list">
+            <li><span class="legend__dot legend__dot--muscle"></span>Músculo</li>
+            <li><span class="legend__dot legend__dot--bone"></span>Hueso</li>
+            <li><span class="legend__dot legend__dot--nerve"></span>Nervio</li>
+            <li><span class="legend__dot legend__dot--ligament"></span>Ligamento</li>
+          </ul>
+        </section>
+      </aside>
+
+      <section class="viewer" aria-label="Visor 3D">
+        <canvas id="viewer-canvas" tabindex="0" role="img"
+          aria-label="Modelo anatómico en 3D. Con el visor enfocado: flechas para rotar, 1, 2 y 3 para las vistas anterior, lateral y posterior, Espacio para la auto-rotación. J y K recorren las estructuras una a una. La lista completa está en el panel «Capas y regiones»."></canvas>
+
+        <!-- El marco de vidrio y la fila de botones son dos cajas a propósito:
+             el vidrio (backdrop-filter) es el bloque contenedor de los
+             tooltips con `hoist`, y si él mismo desplazaba en horizontal los
+             recortaba enteros. Así desplaza la fila y el tooltip queda fuera. -->
+        <div class="viewer__bar">
+          <div class="viewer__controls" id="viewer-controls"></div>
+        </div>
+
+        <div class="viewer__hint" id="viewer-hint" hidden>
+          <button type="button" class="viewer__hint-close" id="viewer-hint-close" aria-label="Cerrar">×</button>
+          <strong>Controles del visor</strong>
+          <!-- En pantallas táctiles no hay rueda, ni botón derecho, ni teclado:
+               se enseña la lista que corresponde (ver @media (hover: none)). -->
+          <ul role="list" class="viewer__hint-tactil">
+            <li><kbd>Un dedo</kbd> — rotar el modelo</li>
+            <li><kbd>Pellizcar</kbd> — acercar y alejar</li>
+            <li><kbd>Dos dedos</kbd> — desplazar</li>
+            <li><kbd>Tocar</kbd> — abrir la ficha de la estructura</li>
+            <li><kbd>Doble toque</kbd> en el fondo — quitar la selección y volver a la vista general</li>
+            <li>Primer botón de la barra (<kbd>↺</kbd>) — volver a la vista general</li>
+          </ul>
+          <ul role="list" class="viewer__hint-raton">
+            <li><kbd>Arrastrar</kbd> — rotar el modelo</li>
+            <li><kbd>Botón derecho</kbd> o <kbd>Shift</kbd>+<kbd>arrastrar</kbd> — desplazar</li>
+            <li><kbd>Rueda</kbd> — acercar hacia el cursor</li>
+            <li><kbd>Doble clic</kbd> — volver a la vista general</li>
+            <li><kbd>← → ↑ ↓</kbd> — rotar con precisión</li>
+            <li><kbd>J</kbd> / <kbd>K</kbd> — estructura siguiente / anterior</li>
+            <li><kbd>A</kbd> — aislar: ocultar todo salvo lo seleccionado</li>
+            <li><kbd>/</kbd> — ir al buscador</li>
+            <li><kbd>Espacio</kbd> — auto-rotación · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> — vistas</li>
+          </ul>
+        </div>
+
+        <div class="viewer__hud" id="viewer-hud">
+          <span class="viewer__hud-label" id="hover-label"></span>
+        </div>
+
+        <div class="attach-legend" id="attach-legend" hidden>
+          <span class="attach-legend__title">Inserciones en 3D</span>
+          <span class="attach-legend__row"><span class="attach-legend__dot attach-legend__dot--origin"></span>Origen</span>
+          <span class="attach-legend__row"><span class="attach-legend__dot attach-legend__dot--insertion"></span>Inserción</span>
+        </div>
+
+        <div class="hover-tooltip" id="hover-tooltip" hidden>
+          <span class="hover-tooltip__es" id="hover-tooltip-es"></span>
+          <span class="hover-tooltip__la" id="hover-tooltip-la" lang="la"></span>
+        </div>
+
+        <div class="viewer__loader" id="viewer-loader" hidden>
+          <div class="spinner"></div>
+          <p id="viewer-loader-msg">Preparando el visor 3D…</p>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" id="viewer-loader-bar"></div>
+          </div>
+        </div>
+
+        <div class="viewer__notice" id="viewer-notice" hidden>
+          <h2>No se pudo cargar el modelo 3D</h2>
+          <p>Comprueba tu conexión a internet y vuelve a abrir la página.</p>
+        </div>
+      </section>
+
+      <p id="ficha-live" class="sr-only" role="status" aria-live="polite"></p>
+      <aside class="info-panel" id="info-panel" aria-label="Ficha anatómica">
+        <div class="info-panel__empty">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r=".6" fill="currentColor"/></svg>
+          <h2>Selecciona una estructura</h2>
+          <p>
+            Toca cualquier músculo, hueso, nervio o ligamento del modelo, o
+            búscalo arriba, para ver su ficha.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Contenedores de panel para el modo compacto (<1024px).
+         main.js traslada .sidebar / .info-panel aquí con matchMedia. -->
+    <sl-drawer id="drawer-nav" placement="start" label="Menú"></sl-drawer>
+    <sl-drawer id="drawer-info" placement="end" label="Ficha anatómica"></sl-drawer>
+
+    <section class="quiz" id="quiz-panel" aria-label="Modo examen" hidden></section>
+
+    <section class="cmp-panel" id="cmp-panel" aria-label="Comparar estructuras" hidden></section>
+
+    <sl-dialog id="lightbox" label="Imagen anatómica" class="lightbox">
+      <figure class="lightbox-figure">
+        <img id="lightbox-img" alt="" />
+        <figcaption id="lightbox-caption"></figcaption>
+      </figure>
+    </sl-dialog>
+
+    <!-- Diálogos de ayuda: el contenido lo pintan src/ui/guia.js, acerca.js y
+         datos.js (la guía se abre sola en la primera visita). -->
+    <sl-dialog id="dlg-guia" class="dlg dlg--guia" label="Cómo se usa"></sl-dialog>
+    <sl-dialog id="dlg-acerca" class="dlg dlg--acerca" label="Acerca de Fisio Atlas"></sl-dialog>
+    <sl-dialog id="dlg-datos" class="dlg dlg--datos" label="Mis datos"></sl-dialog>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

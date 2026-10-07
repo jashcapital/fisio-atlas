@@ -1,0 +1,21 @@
+{
+  "_comment": "Manifiesto de datasets. Lo leen tanto la app (src/data/db.js) como las herramientas de horneado (tools/bake_subset.mjs), para que el catálogo del navegador y el de los .glb no puedan desincronizarse. Añadir aquí cualquier dataset nuevo.",
+  "datasets": [
+    {
+      "file": "head.json",
+      "label": "Cabeza y cara"
+    },
+    {
+      "file": "upper-limb.json",
+      "label": "Miembro superior y tronco"
+    },
+    {
+      "file": "lower-limb.json",
+      "label": "Miembro inferior"
+    },
+    {
+      "file": "leg-foot.json",
+      "label": "Pierna y pie"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+Bibliotecas y fuentes de terceros incluidas en vendor/ (generado por tools/build_vendor.mjs).
+Cada línea: paquete@versión → archivo con su licencia (en esta carpeta salvo indicación).
+
+@floating-ui/core@1.8.0  →  @floating-ui__core.txt
+@floating-ui/dom@1.8.0  →  @floating-ui__dom.txt
+@floating-ui/utils@0.2.12  →  @floating-ui__utils.txt
+@fontsource-variable/fraunces@5.3.0  →  ../fonts/OFL-Fraunces.txt
+@fontsource/ibm-plex-mono@5.3.0  →  ../fonts/OFL-IBM-Plex-Mono.txt
+@fontsource/instrument-sans@5.3.0  →  ../fonts/OFL-Instrument-Sans.txt
+@lit/reactive-element@2.1.2  →  @lit__reactive-element.txt
+@shoelace-style/localize@3.2.3  →  @shoelace-style__localize.txt
+@shoelace-style/shoelace@2.20.1  →  @shoelace-style__shoelace.txt
+composed-offset-position@0.0.6  →  composed-offset-position.txt
+framer-motion@13.5.1  →  framer-motion.txt
+fuse.js@7.5.0  →  fuse.js.txt
+lit@3.3.3  →  lit.txt
+lit-element@4.2.2  →  lit-element.txt
+lit-html@3.3.3  →  lit-html.txt
+motion@13.2.0  →  motion.txt
+motion-dom@13.5.1  →  motion-dom.txt
+motion-utils@13.5.0  →  motion-utils.txt
+open-props@1.7.23  →  open-props.txt
+three@0.186.0  →  three.txt
+three-mesh-bvh@0.9.15  →  three-mesh-bvh.txt
